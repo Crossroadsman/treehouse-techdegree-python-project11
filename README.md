@@ -15,23 +15,23 @@ Project Status
 --------------
 ### vs Specs from Project Instructions ###
 - [ ] Create application with the following models and fieldnames:
-  - [ ] `Dog` model
-    - [ ] `name`
-    - [ ] `image_filename`
-    - [ ] `breed`
-    - [ ] `age` (integer for months)
-    - [ ] `gender` ('m' for male, 'f' for female, 'u' for unknown)
-    - [ ] `size` ('s' small, 'm' medium, 'l' large, 'xl' extra large,
+  - [x] `Dog` model
+    - [x] `name`
+    - [x] `image_filename`
+    - [x] `breed`
+    - [x] `age` (integer for months)
+    - [x] `gender` ('m' for male, 'f' for female, 'u' for unknown)
+    - [x] `size` ('s' small, 'm' medium, 'l' large, 'xl' extra large,
           'u' unknown)
-  - [ ] `UserDog` model
-    - [ ] `user`
-    - [ ] `dog`
-    - [ ] `status` ('l' liked, 'd' disliked)
-  - [ ] `UserPref` model
-    - [ ] `user`
-    - [ ] `age` ('b' baby, 'y' young, 'a' adult, 's' senior)
-    - [ ] `gender` ('m' male, 'f' female)
-    - [ ] `size` ('s' small, 'm' medium, 'l' large, 'xl' extra large)
+  - [x] `UserDog` model
+    - [x] `user`
+    - [x] `dog`
+    - [x] `status` ('l' liked, 'd' disliked)
+  - [x] `UserPref` model
+    - [x] `user`
+    - [x] `age` ('b' baby, 'y' young, 'a' adult, 's' senior)
+    - [x] `gender` ('m' male, 'f' female)
+    - [x] `size` ('s' small, 'm' medium, 'l' large, 'xl' extra large)
 - [ ] Create serializers:
   - [ ] `Dog` (all fields need to be revealed)
   - [ ] `UserPref` (all fields need to be revealed except `user`)
