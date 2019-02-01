@@ -38,18 +38,14 @@ class DogSerializer(serializers.ModelSerializer):
 
 
 class UserPrefSerializer(serializers.ModelSerializer):
-    user = ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=CASCADE)
-    age = CharField(max_length=1, choices=AGE_CHOICES)
-    gender = CharField(max_length=1, choices=GENDER_CHOICES)
-    size = CharField(max_length=2, choices=SIZE_CHOICES)
 
     class Meta:
         model = models.UserPref
         fields = (
             'id',
-            ### TODO: REMOVE THIS WHEN DONE TESTING ###
+            ### TODO: REMOVE ↓↓↓↓ WHEN DONE TESTING ###
             'user'
-            ### TODO: REMOVE THIS WHEN DONE TESTING ###
+            ### TODO: REMOVE ↑↑↑↑ WHEN DONE TESTING ###
             'age',
             'gender',
             'size',
