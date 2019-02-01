@@ -55,7 +55,6 @@ Project Status
 - [ ] >75% Test coverage
 
 ### vs Specs from How You Will Be Graded ###
-12345678901234567890123456789012345678901234567890123456789012345678901234567890
 - [ ] Script runs correctly
 - [ ] Correct dogs are shown
 - [ ] Ability to add/remove dogs
