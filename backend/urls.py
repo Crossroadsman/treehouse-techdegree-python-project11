@@ -4,6 +4,8 @@ from django.urls import path, re_path, include
 from rest_framework.authtoken import views
 
 
+# URL Patterns
+# ------------
 urlpatterns = [
     # Django
     path('admin/', admin.site.urls),

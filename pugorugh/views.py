@@ -14,3 +14,11 @@ class UserRegisterView(CreateAPIView):
     
     model = get_user_model()
     serializer_class = serializers.UserSerializer
+
+
+class DogViewSet:
+    pass
+
+
+class UserPrefViewSet:
+    pass
