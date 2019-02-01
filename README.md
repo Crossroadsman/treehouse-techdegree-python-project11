@@ -33,7 +33,7 @@ Project Status
     - [x] `gender` ('m' male, 'f' female)
     - [x] `size` ('s' small, 'm' medium, 'l' large, 'xl' extra large)
 - [ ] Create serializers:
-  - [ ] `Dog` (all fields need to be revealed)
+  - [x] `Dog` (all fields need to be revealed)
   - [ ] `UserPref` (all fields need to be revealed except `user`)
 - [ ] Create routes:
   - [ ] get dogs:
