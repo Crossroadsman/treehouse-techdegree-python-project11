@@ -10,6 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
+# Details of 4.1 from Custom User Model Implementation
+# (see users.models for full outline)
+#
+# - add the `users` app (passing the config model instead of the whole app)
+#   (for an explanation of this newer config model approach, see:
+#    https://stackoverflow.com/questions/34377237/confused-a-bit-about-django-installed-apps-naming-convention
+#   )
+# - add the `AUTH_USER_MODEL` setting to tell Django to use our model instead 
+#   of `User`
+#
+# Details of 8 from Custom User Model Implementation
+#
+# - configure `TEMPLATES` to have a project-level templates directory
+# - set the redirect links for login and logout
+
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -37,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -80,6 +96,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'users.PugUghUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
