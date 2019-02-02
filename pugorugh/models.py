@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db.models import Model, CASCADE
-from django.db.models import (CharField, PositiveIntegerField, ForeignKey)
+from django.db.models import (CharField, PositiveIntegerField, ForeignKey, OneToOneField)
 
 
 class Dog(Model):
@@ -50,6 +50,11 @@ class UserDog(Model):
     dog = ForeignKey(to='Dog', on_delete=CASCADE)
     status = CharField(max_length=1, choices=STATUS_CHOICES)
 
+    class Meta:
+        unique_together = (
+            ('user', 'dog'),
+        )
+
 
 class UserPref(Model):
 
@@ -80,7 +85,7 @@ class UserPref(Model):
         (EXTRA_LARGE, 'extra large'),
     )
 
-    user = ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=CASCADE)
+    user = OneToOneField(to=settings.AUTH_USER_MODEL, on_delete=CASCADE)
     age = CharField(max_length=1, choices=AGE_CHOICES)
     gender = CharField(max_length=1, choices=GENDER_CHOICES)
     size = CharField(max_length=2, choices=SIZE_CHOICES)
