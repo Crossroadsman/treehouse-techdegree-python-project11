@@ -33,8 +33,8 @@ class NextDogAPIView(RetrieveAPIView):
     serializer_class = serializers.DogSerializer
 
     def get_object(self):
-        status = self.kwargs.get('status')
         current_dog_id = self.kwargs.get('pk')
+        status = self.kwargs.get('status')
         current_user = self.request.user
 
         if status not in ['liked', 'disliked']:
@@ -49,6 +49,19 @@ class NextDogAPIView(RetrieveAPIView):
         else:
             # 'l' or 'd'
             status = status[0]
+
+            # Intercept the case where `pk` = -1 (the initial value for a user
+            # who hasn't added any dogs to list for the specified status)
+            if current_dog_id == -1:
+                # Get all the dogs that have not been added to the opposite list
+                other_status = 'd' if status == 'l' else 'l'
+                dogs_without_status = self.queryset.exclude(
+                    userdog__user=current_user,
+                    userdog__status=other_status
+                )
+                return dogs_without_status.first()
+
+
             # Reminder: when querying through a reverseFK or a MTM, the 
             # behaviour of chained filters can be subtly different.
             # Imagine there is a dog called 'Spot'. Current_user has marked
