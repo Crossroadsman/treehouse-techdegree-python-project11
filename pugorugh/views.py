@@ -102,8 +102,109 @@ class UserDogCreateUpdateAPIView(
     queryset = models.UserDog.objects.all()
     serializer_class = serializers.DogSerializer
 
-'''
-class UserPrefViewSet(viewsets.ModelViewSet):
+    def create(self, request, *args, **kwargs):
+        status = self.kwargs.get('status')[0]
+        user = self.request.user
+        pk = self.kwargs.get('pk')
+        dog = models.Dog.objects.get(pk=pk)
+        
+        # check to see if there is already a UserDog belonging to this
+        # user re this dog
+        existing = self.queryset.filter(
+            user=user, dog=dog
+        )
+        
+        if existing.exists():
+            raise ValueError("Shouldn't POST if already exists")
+
+
+        userdog = models.UserDog.objects.create(
+            user=user,
+            dog=dog,
+            status=status
+        )
+        
+        # What type should create return?
+        return userdog
+
+    def update(self, request, *args, **kwargs):
+        status = self.kwargs.get('status')[0]
+        user = self.request.user
+        pk = self.kwargs.get('pk')
+        dog = models.Dog.objects.get(pk=pk)
+        
+        # check to see if there is already a UserDog belonging to this
+        # user re this dog
+        try:
+            userdog = self.queryset.get(user=user, dog=dog)
+        except models.UserDog.DoesNotExist:
+            raise ValueError("Shouldn't PUT if no entry to update")
+        
+        userdog.status = status
+        userdog.save()
+        
+        # What type should create return?
+        return userdog
+
+
+class UserPrefCreateUpdateAPIView(
+    CreateModelMixin,
+    UpdateModelMixin,
+    GenericAPIView
+):
+    """View for POST a new set of prefs or PUT a change to existing prefs"""
+    
     queryset = models.UserPref.objects.all()
     serializer_class = serializers.UserPrefSerializer
-'''
+
+    def create(self, request, *args, **kwargs):
+        ### TODO
+        pass
+        '''
+        status = self.kwargs.get('status')[0]
+        user = self.request.user
+        pk = self.kwargs.get('pk')
+        dog = models.Dog.objects.get(pk=pk)
+        
+        # check to see if there is already a UserDog belonging to this
+        # user re this dog
+        existing = self.queryset.filter(
+            user=user, dog=dog
+        )
+        
+        if existing.exists():
+            raise ValueError("Shouldn't POST if already exists")
+
+
+        userdog = models.UserDog.objects.create(
+            user=user,
+            dog=dog,
+            status=status
+        )
+        
+        # What type should create return?
+        return userdog
+        '''
+
+    def update(self, request, *args, **kwargs):
+        ### TODO
+        pass
+        '''
+        status = self.kwargs.get('status')[0]
+        user = self.request.user
+        pk = self.kwargs.get('pk')
+        dog = models.Dog.objects.get(pk=pk)
+        
+        # check to see if there is already a UserDog belonging to this
+        # user re this dog
+        try:
+            userdog = self.queryset.get(user=user, dog=dog)
+        except models.UserDog.DoesNotExist:
+            raise ValueError("Shouldn't PUT if no entry to update")
+        
+        userdog.status = status
+        userdog.save()
+        
+        # What type should create return?
+        return userdog
+        '''
