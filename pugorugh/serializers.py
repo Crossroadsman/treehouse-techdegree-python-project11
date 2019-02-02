@@ -44,7 +44,7 @@ class UserPrefSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             ### TODO: REMOVE ↓↓↓↓ WHEN DONE TESTING ###
-            'user'
+            'user',
             ### TODO: REMOVE ↑↑↑↑ WHEN DONE TESTING ###
             'age',
             'gender',

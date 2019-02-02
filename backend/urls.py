@@ -12,6 +12,9 @@ urlpatterns = [
     
     # Rest Framework
     #   Browsable API - Login/Logout views
+    #   `api-auth/` itself is not browsable, but this provides `.../login/`
+    #   and `.../logout/` views that are browsable directly and work with
+    #   the browsable API.
     re_path(r'^api-auth/', include('rest_framework.urls')),
     #   Built-in view for getting a token from a username/password
     #   (will return a JSON response when a valid username/password are POSTed)

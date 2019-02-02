@@ -24,14 +24,19 @@ class Dog(Model):
         (UNKNOWN, 'unknown'),
     )
 
+    # Required Fields
+    # ---------------
     name = CharField(max_length=255)
     # most Linux file systems are limited to 255 + 4096, Windows API: 260
     image_filename = CharField(max_length=255)
-    breed = CharField(max_length=255)
     age = PositiveIntegerField()  # months
     gender = CharField(max_length=1, choices=GENDER_CHOICES)
     size = CharField(max_length=2, choices=SIZE_CHOICES)
 
+    # Optional Fields
+    # ---------------
+    breed = CharField(max_length=255, blank=True, default='')
+    
 
 class UserDog(Model):
 
