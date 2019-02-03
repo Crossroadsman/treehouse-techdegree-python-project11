@@ -4,6 +4,7 @@ from django.shortcuts import render
 from rest_framework import permissions
 from rest_framework.generics import GenericAPIView, CreateAPIView, RetrieveAPIView
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
+from rest_framework.exceptions import NotFound
 
 from . import serializers
 from . import models
@@ -33,11 +34,23 @@ class NextDogAPIView(RetrieveAPIView):
     serializer_class = serializers.DogSerializer
 
     def get_object(self):
-        current_dog_id = self.kwargs.get('pk')
+        print("=== DEBUG ===")
+        print("getting object...")
+
+        current_dog_id = int(self.kwargs.get('pk'))
         status = self.kwargs.get('status')
         current_user = self.request.user
+        
+        print("=== DEBUG ===")
+        print("attributes:")
+        print(f'current_dog_id: {current_dog_id}')
+        print(f'status: {status}')
+        print(f'current_user: {current_user}')
 
         if status not in ['liked', 'disliked']:
+            print("=== DEBUG ===")
+            print("undecided")
+
             # undecided, therefore get the first dog with no UserDog
             # for the current user.
             #            
@@ -47,13 +60,22 @@ class NextDogAPIView(RetrieveAPIView):
             return undecided_dogs[0]
 
         else:
+            print("=== DEBUG ===")
+            print("not undecided")
             # 'l' or 'd'
             status = status[0]
+
+            print("=== DEBUG ===")
+            print(f"short status: {status}")
 
             # Intercept the case where `pk` = -1 (the initial value for a user
             # who hasn't added any dogs to list for the specified status)
             if current_dog_id == -1:
                 # Get all the dogs that have not been added to the opposite list
+
+                print("=== DEBUG ===")
+                print("need to handle -1")
+
                 other_status = 'd' if status == 'l' else 'l'
                 dogs_without_status = self.queryset.exclude(
                     userdog__user=current_user,
@@ -61,7 +83,8 @@ class NextDogAPIView(RetrieveAPIView):
                 )
                 return dogs_without_status.first()
 
-
+            print("=== DEBUG ===")
+            print("not -1 case")
             # Reminder: when querying through a reverseFK or a MTM, the 
             # behaviour of chained filters can be subtly different.
             # Imagine there is a dog called 'Spot'. Current_user has marked
@@ -87,13 +110,21 @@ class NextDogAPIView(RetrieveAPIView):
             # relation containing the current_user, so he isn't filtered out
             # by the first filter. He also has a userdog relation with 'd',
             # so he's not filtered out by the second filter.
+
+            print("=== DEBUG ===")
+            print(f"filtering based on current_user {current_user} and")
+            print(f"status {status}")
             dogs_with_status = self.queryset.filter(
                 userdog__user=current_user,
                 userdog__status=status
             )
+            print("=== DEBUG ===")
+            print(f"filtered dogs: {dogs_with_status}")
+            print(f"count: {dogs_with_status.count()}")
+
             if dogs_with_status.count() < 2:
                 # There are no other dogs with this status
-                return self.queryset.none()
+                raise NotFound(detail="Error 404, page not found", code=404)
 
             # Try to get a dog with a higher PK
             next_dog = dogs_with_status.filter(id__gt=current_dog_id).first()
