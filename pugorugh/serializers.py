@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 
+from . import models
+
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -18,3 +20,33 @@ class UserSerializer(serializers.ModelSerializer):
         
         fields = ('username', 'password')
         model = get_user_model()
+
+
+class DogSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Dog
+        fields = (
+            'id',
+            'name',
+            'image_filename',
+            'breed',
+            'age',
+            'gender',
+            'size',
+        )
+
+
+class UserPrefSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.UserPref
+        fields = (
+            'id',
+            ### TODO: REMOVE ↓↓↓↓ WHEN DONE TESTING ###
+            'user',
+            ### TODO: REMOVE ↑↑↑↑ WHEN DONE TESTING ###
+            'age',
+            'gender',
+            'size',
+        )
