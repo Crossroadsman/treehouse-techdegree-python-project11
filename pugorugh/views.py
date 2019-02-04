@@ -2,9 +2,10 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import render
 
 from rest_framework import permissions
-from rest_framework.generics import GenericAPIView, CreateAPIView, RetrieveAPIView
+from rest_framework.generics import GenericAPIView, CreateAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.exceptions import NotFound
+from rest_framework.response import Response
 
 from . import serializers
 from . import models
@@ -30,61 +31,30 @@ class UserRegisterView(CreateAPIView):
 class NextDogAPIView(RetrieveAPIView):
     """View for GETting a dog instance"""
 
+    # Attributes
+    # ----------
     queryset = models.Dog.objects.all()
     serializer_class = serializers.DogSerializer
 
-    def get_object(self):
-        print("=== DEBUG ===")
-        print("getting object...")
-
-        current_dog_id = int(self.kwargs.get('pk'))
+    # Helper Methods
+    # --------------
+    def get_first_dog_with_status(self):
+        """returns the first dog for the current user with the corresponding
+        status (empty queryset if not dog with status)
+        """
         status = self.kwargs.get('status')
         current_user = self.request.user
-        
-        print("=== DEBUG ===")
-        print("attributes:")
-        print(f'current_dog_id: {current_dog_id}')
-        print(f'status: {status}')
-        print(f'current_user: {current_user}')
 
-        if status not in ['liked', 'disliked']:
-            print("=== DEBUG ===")
-            print("undecided")
-
-            # undecided, therefore get the first dog with no UserDog
-            # for the current user.
-            #            
-            # Note that when querying across relations, the reverse field
-            # is called `userdog` not `userdog_set`
-            undecided_dogs = self.queryset.exclude(userdog__user=current_user)
-            return undecided_dogs[0]
+        if status[0] not in ['l', 'd']:
+            # first dog is the first pk with no corresponding userdog
+            undecided_dogs = self.get_queryset().exclude(
+                userdog__user=current_user
+            )
+            first_dog_with_status = undecided_dogs.first()
 
         else:
-            print("=== DEBUG ===")
-            print("not undecided")
-            # 'l' or 'd'
-            status = status[0]
-
-            print("=== DEBUG ===")
-            print(f"short status: {status}")
-
-            # Intercept the case where `pk` = -1 (the initial value for a user
-            # who hasn't added any dogs to list for the specified status)
-            if current_dog_id == -1:
-                # Get all the dogs that have not been added to the opposite list
-
-                print("=== DEBUG ===")
-                print("need to handle -1")
-
-                other_status = 'd' if status == 'l' else 'l'
-                dogs_without_status = self.queryset.exclude(
-                    userdog__user=current_user,
-                    userdog__status=other_status
-                )
-                return dogs_without_status.first()
-
-            print("=== DEBUG ===")
-            print("not -1 case")
+            # first dog is first pk with corresponding status
+            #
             # Reminder: when querying through a reverseFK or a MTM, the 
             # behaviour of chained filters can be subtly different.
             # Imagine there is a dog called 'Spot'. Current_user has marked
@@ -110,31 +80,110 @@ class NextDogAPIView(RetrieveAPIView):
             # relation containing the current_user, so he isn't filtered out
             # by the first filter. He also has a userdog relation with 'd',
             # so he's not filtered out by the second filter.
-
-            print("=== DEBUG ===")
-            print(f"filtering based on current_user {current_user} and")
-            print(f"status {status}")
-            dogs_with_status = self.queryset.filter(
+            status_dogs = self.get_queryset().filter(
                 userdog__user=current_user,
-                userdog__status=status
+                userdog__status=status[0]
             )
-            print("=== DEBUG ===")
-            print(f"filtered dogs: {dogs_with_status}")
-            print(f"count: {dogs_with_status.count()}")
+            first_dog_with_status = status_dogs.first()
+        return first_dog_with_status
 
-            if dogs_with_status.count() < 2:
-                # There are no other dogs with this status
-                raise NotFound(detail="Error 404, page not found", code=404)
+    def get_next_dog_with_status(self):
+        """returns the next dog (pk order, wraparound) with the corresponding
+        status (empty queryset if none)
+        """
+        status = self.kwargs.get('status')
+        current_user = self.request.user
+        current_dog_pk = self.kwargs.get('pk')
 
-            # Try to get a dog with a higher PK
-            next_dog = dogs_with_status.filter(id__gt=current_dog_id).first()
-            if next_dog is None:
-                # wrap back around the dogs and get the first
-                next_dog = dogs_with_status.first()
-        
-        return next_dog
+        if status[0] not in ['l', 'd']:
+            # first dog is the next pk with no corresponding userdog
+            status_dogs = self.get_queryset().exclude(
+                userdog__user=current_user
+            )
+
+        else:  # 'l' or 'd'
+            # first dog is next in pk with same userdog status
+            status_dogs = self.get_queryset().filter(
+                userdog__user=current_user,
+                userdog__status=status[0]
+            )
+
+        next_dog_with_status = status_dogs.filter(
+            id__gt=current_dog_pk
+        ).first()
+
+        # if there are no higher pks with status, wraparound to first
+        if next_dog_with_status is None:
+            next_dog_with_status = status_dogs.first()
+
+        return next_dog_with_status
+
+    # APIView Methods
+    # ---------------
+    def get_object(self):
+        current_dog_id = self.kwargs.get('pk')
+
+        # if pk is -1 (switching categories)
+        # get the first dog in the category (wrapping around if necessary)
+        if current_dog_id == -1:
+            dog = self.get_first_dog_with_status()
+
+        # pk is not -1 (it's a real pk)
+        # get the first dog with the matching status with a pk > current_dog_id
+        # (wrap around if necessary).
+        else:
+            dog = self.get_next_dog_with_status()
+
+        #If no dogs at all with status, return 404
+        if dog is None:
+            raise NotFound(detail="Error 404, page not found", code=404)
+        else:
+            return dog
 
 
+# We should be able to mixin the update view to the retrieve view.
+
+
+class DogStatusUpdateAPIView(UpdateAPIView):
+    """View for setting the UserDog status for a particular dog"""
+
+    queryset = models.Dog.objects.all()
+    serializer_class = serializers.DogSerializer
+
+    def update(self, request, *args, **kwargs):
+        status = self.kwargs.get('status')[0]
+        user = self.request.user
+        pk = self.kwargs.get('pk')
+        dog = models.Dog.objects.get(pk=pk)
+
+        print("=== DEBUG ===")
+        print("Setting a UserDog with the following values:")
+        print(f'status: {status}')
+        print(f'user: {user}')
+        print(f'dog pk: {pk}')
+        print(f'dog: {dog}')
+
+        if status in ['l', 'd']:
+            userdog, created = models.UserDog.objects.get_or_create(
+                user=user,
+                dog=dog,
+                status=status
+            )
+            
+            #next_dog = 
+
+        if status == 'u':
+            userdog = models.UserDog.get(user=user, dog=dog)
+            userdog.delete()
+
+            #next_dog = 
+
+
+        serializer = self.get_serializer(dog)
+        return Response(serializer.data)
+
+
+'''
 class UserDogCreateUpdateAPIView(
     CreateModelMixin,
     UpdateModelMixin,
@@ -146,6 +195,7 @@ class UserDogCreateUpdateAPIView(
     queryset = models.UserDog.objects.all()
     serializer_class = serializers.DogSerializer
 
+    # Define the create behaviour
     def create(self, request, *args, **kwargs):
         status = self.kwargs.get('status')[0]
         user = self.request.user
@@ -154,7 +204,7 @@ class UserDogCreateUpdateAPIView(
         
         # check to see if there is already a UserDog belonging to this
         # user re this dog
-        existing = self.queryset.filter(
+        existing = self.get_queryset().filter(
             user=user, dog=dog
         )
         
@@ -171,24 +221,40 @@ class UserDogCreateUpdateAPIView(
         # What type should create return?
         return userdog
 
+    # Associate the create behaviour with the POST action
+    # (copied straight from CreateAPIView)
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    # Define the update behaviour
     def update(self, request, *args, **kwargs):
         status = self.kwargs.get('status')[0]
         user = self.request.user
         pk = self.kwargs.get('pk')
         dog = models.Dog.objects.get(pk=pk)
         
+        serializer
+
+
         # check to see if there is already a UserDog belonging to this
         # user re this dog
         try:
-            userdog = self.queryset.get(user=user, dog=dog)
+            userdog = self.get_queryset().get(user=user, dog=dog)
         except models.UserDog.DoesNotExist:
-            raise ValueError("Shouldn't PUT if no entry to update")
+            #raise ValueError("Shouldn't PUT if no entry to update")
+            return self.post(request, *args, **kwargs)
         
         userdog.status = status
         userdog.save()
         
         # What type should create return?
         return userdog
+
+
+    # Associate the update behaviour with the PUT action
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+'''
 
 
 class UserPrefCreateUpdateAPIView(
