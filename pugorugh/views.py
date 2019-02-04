@@ -28,8 +28,11 @@ class UserRegisterView(CreateAPIView):
     serializer_class = serializers.UserSerializer
 
 
-class NextDogAPIView(RetrieveAPIView):
-    """View for GETting a dog instance"""
+class RetrieveUpdateDogAPIView(
+    UpdateModelMixin,
+    RetrieveAPIView
+):
+    """View for GETting a dog instance and setting status"""
 
     # Attributes
     # ----------
@@ -140,28 +143,13 @@ class NextDogAPIView(RetrieveAPIView):
         else:
             return dog
 
-
-# We should be able to mixin the update view to the retrieve view.
-
-
-class DogStatusUpdateAPIView(UpdateAPIView):
-    """View for setting the UserDog status for a particular dog"""
-
-    queryset = models.Dog.objects.all()
-    serializer_class = serializers.DogSerializer
-
+    # Mixin Methods
+    # -------------
     def update(self, request, *args, **kwargs):
         status = self.kwargs.get('status')[0]
         user = self.request.user
         pk = self.kwargs.get('pk')
         dog = self.get_queryset().get(pk=pk)
-
-        print("=== DEBUG ===")
-        print("Setting a UserDog with the following values:")
-        print(f'status: {status}')
-        print(f'user: {user}')
-        print(f'dog pk: {pk}')
-        print(f'dog: {dog}')
 
         if status in ['l', 'd']:
 
@@ -188,7 +176,8 @@ class DogStatusUpdateAPIView(UpdateAPIView):
         serializer = self.get_serializer(dog)
         return Response(serializer.data)
 
-
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
 
 class UserPrefCreateUpdateAPIView(

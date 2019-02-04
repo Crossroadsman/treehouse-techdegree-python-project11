@@ -39,12 +39,10 @@ urlpatterns = [
     re_path(r'^favicon\.ico$', RedirectView.as_view(url='/static/icons/favicon.ico', permanent=True)),
 
     # API
-    re_path(r'^api/dog/(?P<pk>[-\d]+)/(?P<status>\w+)/next/$', views.NextDogAPIView.as_view(), name="next-dog"),
-    #re_path(r'^api/dog/(?P<pk>[-\d]+)/(?P<status>\w+)/$', views.UserDogCreateUpdateAPIView.as_view(), name="set-status"),
+    re_path(r'^api/dog/(?P<pk>[-\d]+)/(?P<status>\w+)/next/$', views.RetrieveUpdateDogAPIView.as_view(), name="next-dog"),
+    re_path(r'^api/dog/(?P<pk>[-\d]+)/(?P<status>\w+)/$', views.RetrieveUpdateDogAPIView.as_view(), name="set-status"),
     re_path(r'^api/user/preferences/$', views.UserPrefCreateUpdateAPIView.as_view(), name="set-preferences"),
 
-    # Individual UserDog Views
-    re_path(r'^api/dog/(?P<pk>[-\d]+)/(?P<status>\w+)/$', views.DogStatusUpdateAPIView.as_view(), name="set-status"),
 ]
 
 # Apply Format Suffixes
