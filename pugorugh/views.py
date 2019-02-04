@@ -154,7 +154,7 @@ class DogStatusUpdateAPIView(UpdateAPIView):
         status = self.kwargs.get('status')[0]
         user = self.request.user
         pk = self.kwargs.get('pk')
-        dog = models.Dog.objects.get(pk=pk)
+        dog = self.get_queryset().get(pk=pk)
 
         print("=== DEBUG ===")
         print("Setting a UserDog with the following values:")
@@ -164,97 +164,31 @@ class DogStatusUpdateAPIView(UpdateAPIView):
         print(f'dog: {dog}')
 
         if status in ['l', 'd']:
-            userdog, created = models.UserDog.objects.get_or_create(
-                user=user,
-                dog=dog,
-                status=status
-            )
+
+            # try to get the specified userdog
+            userdog = dog.userdog_set.filter(user=user).first()
+
+            if userdog:
+                # update the userdog
+                userdog.status = status
+                userdog.save()
+            else:  # no userdog
+                # create the userdog
+                userdog = models.UserDog.objects.create(
+                    user=user,
+                    dog=dog,
+                    status=status
+                )
             
-            #next_dog = 
-
         if status == 'u':
-            userdog = models.UserDog.get(user=user, dog=dog)
-            userdog.delete()
-
-            #next_dog = 
-
+            userdog = dog.userdog_set.filter(user=user).first()
+            if userdog:
+                userdog.delete()
 
         serializer = self.get_serializer(dog)
         return Response(serializer.data)
 
 
-'''
-class UserDogCreateUpdateAPIView(
-    CreateModelMixin,
-    UpdateModelMixin,
-    GenericAPIView
-):
-    """View for POST a new UserDog instance and PUT a change to an existing
-    UserDog"""
-    
-    queryset = models.UserDog.objects.all()
-    serializer_class = serializers.DogSerializer
-
-    # Define the create behaviour
-    def create(self, request, *args, **kwargs):
-        status = self.kwargs.get('status')[0]
-        user = self.request.user
-        pk = self.kwargs.get('pk')
-        dog = models.Dog.objects.get(pk=pk)
-        
-        # check to see if there is already a UserDog belonging to this
-        # user re this dog
-        existing = self.get_queryset().filter(
-            user=user, dog=dog
-        )
-        
-        if existing.exists():
-            raise ValueError("Shouldn't POST if already exists")
-
-
-        userdog = models.UserDog.objects.create(
-            user=user,
-            dog=dog,
-            status=status
-        )
-        
-        # What type should create return?
-        return userdog
-
-    # Associate the create behaviour with the POST action
-    # (copied straight from CreateAPIView)
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
-
-    # Define the update behaviour
-    def update(self, request, *args, **kwargs):
-        status = self.kwargs.get('status')[0]
-        user = self.request.user
-        pk = self.kwargs.get('pk')
-        dog = models.Dog.objects.get(pk=pk)
-        
-        serializer
-
-
-        # check to see if there is already a UserDog belonging to this
-        # user re this dog
-        try:
-            userdog = self.get_queryset().get(user=user, dog=dog)
-        except models.UserDog.DoesNotExist:
-            #raise ValueError("Shouldn't PUT if no entry to update")
-            return self.post(request, *args, **kwargs)
-        
-        userdog.status = status
-        userdog.save()
-        
-        # What type should create return?
-        return userdog
-
-
-    # Associate the update behaviour with the PUT action
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-'''
 
 
 class UserPrefCreateUpdateAPIView(
