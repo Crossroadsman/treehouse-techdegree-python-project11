@@ -102,9 +102,18 @@ class DogRetrieveUpdateAPIView(
             status_dogs = self.get_queryset().exclude(
                 userdog__user=current_user
             )
+            # We want to filter on userprefs to ensure user only sees dogs
+            # they might like
+            #
+            # first, filter by preferred age
+            age_prefs = current_user.userpref.age
 
         else:  # 'l' or 'd'
             # first dog is next in pk with same userdog status
+            #
+            # Note, we're ignoring userprefs because the user has explicitly
+            # expressed a like/dislike for this particular dog. General 
+            # preferences shouldn't override this expressed status
             status_dogs = self.get_queryset().filter(
                 userdog__user=current_user,
                 userdog__status=status[0]
