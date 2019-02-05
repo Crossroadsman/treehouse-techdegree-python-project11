@@ -1,8 +1,7 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import render
 
 from rest_framework import permissions
-from rest_framework.generics import GenericAPIView, CreateAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
@@ -28,7 +27,7 @@ class UserRegisterView(CreateAPIView):
     serializer_class = serializers.UserSerializer
 
 
-class RetrieveUpdateDogAPIView(
+class DogRetrieveUpdateAPIView(
     UpdateModelMixin,
     RetrieveAPIView
 ):
@@ -180,64 +179,43 @@ class RetrieveUpdateDogAPIView(
         return self.update(request, *args, **kwargs)
 
 
-class UserPrefCreateUpdateAPIView(
-    CreateModelMixin,
+class UserPrefRetrieveAPIView(
     UpdateModelMixin,
-    GenericAPIView
+    CreateModelMixin,
+    RetrieveAPIView
 ):
-    """View for POST a new set of prefs or PUT a change to existing prefs"""
-    
+    """Return the UserPref values for a user"""
+    # GET /api/user/preferences
+
     queryset = models.UserPref.objects.all()
     serializer_class = serializers.UserPrefSerializer
 
-    def create(self, request, *args, **kwargs):
-        ### TODO
-        pass
-        '''
-        status = self.kwargs.get('status')[0]
+    # Override Retrieve Methods
+    # -------------------------
+    def get_object(self):
         user = self.request.user
-        pk = self.kwargs.get('pk')
-        dog = models.Dog.objects.get(pk=pk)
-        
-        # check to see if there is already a UserDog belonging to this
-        # user re this dog
-        existing = self.queryset.filter(
-            user=user, dog=dog
-        )
-        
-        if existing.exists():
-            raise ValueError("Shouldn't POST if already exists")
+        userpref = self.get_queryset().filter(user=user).first()
+        if userpref is None:
+            raise NotFound(detail="Error 404, page not found", code=404)
+        else:
+            return userpref
 
-
-        userdog = models.UserDog.objects.create(
-            user=user,
-            dog=dog,
-            status=status
-        )
-        
-        # What type should create return?
-        return userdog
-        '''
-
+    # Mixin Methods
+    # -------------
     def update(self, request, *args, **kwargs):
-        ### TODO
-        pass
-        '''
-        status = self.kwargs.get('status')[0]
-        user = self.request.user
-        pk = self.kwargs.get('pk')
-        dog = models.Dog.objects.get(pk=pk)
+        userpref = self.get_object()
         
-        # check to see if there is already a UserDog belonging to this
-        # user re this dog
-        try:
-            userdog = self.queryset.get(user=user, dog=dog)
-        except models.UserDog.DoesNotExist:
-            raise ValueError("Shouldn't PUT if no entry to update")
-        
-        userdog.status = status
-        userdog.save()
-        
-        # What type should create return?
-        return userdog
-        '''
+        serializer = self.get_serializer(userpref, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)  # just calls serializer.save()
+
+        return Response(serializer.data)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def perform_create(self, request, *args, **kwargs):
+        serializer.save(user=self.request.user)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
