@@ -1,5 +1,6 @@
 import sys
 from django.db import models
+from django.db.models import Q
 
 
 AGE_MAPPING = [
@@ -76,31 +77,18 @@ class DogQuerySet(models.QuerySet):
     # UserPref-specific filters
     # -------------------------
     def with_ageprefs(self, user):
-        """Returns all the dogs that match the user's age preferences
-
-        WARNING:
-        This method returns the expected queryset BUT
-        `all_dogs.difference(these_dogs)` will return an incorrect queryset
-        (it will contain some (but not all) dogs in both `all_dogs` and
-        `these_dogs`).
-
-        Do not combine this method with `difference()`
-
-        The alternative: `all_dogs.exclude(id__in=these_dogs)` returns an
-        OperationalError.
-        """
+        """Returns all the dogs that match the user's age preferences"""
         age_prefs = set(user.userpref.age.split(","))
 
         if age_prefs == set([tup[0] for tup in AGE_MAPPING]):
             # all ages are in preferences, no need to refine queryset
             return self.all()
-        else:
-            dogs_so_far = self.none()
+        else: # Use Q objects to OR together the preferences instead of Union
+            q_objects = Q()
             for age_class in age_prefs:
-                dogs_so_far = dogs_so_far.union(
-                    self.with_age_class(age_class)
-                )
-            return dogs_so_far
+                dogs_with_age = self.with_age_class(age_class)
+                q_objects |= Q(id__in=dogs_with_age)
+            return self.filter(q_objects)
 
     def with_genderprefs(self, user):
         """Returns all the dogs that match the user's gender preferences"""
@@ -112,20 +100,7 @@ class DogQuerySet(models.QuerySet):
             return self.with_genders(gender_prefs)
 
     def with_sizeprefs(self, user):
-        """Returns all the dogs that match the user's size preferences
-
-        WARNING:
-        This method returns the expected queryset BUT
-        `all_dogs.difference(these_dogs)` will return an incorrect queryset
-        (it will contain some (but not all) dogs in both `all_dogs` and
-        `these_dogs`).
-
-        Do not combine this method with `difference()`
-
-        The alternative: `all_dogs.exclude(id__in=these_dogs)` returns an
-        OperationalError.
-
-        """
+        """Returns all the dogs that match the user's size preferences"""
         size_prefs = user.userpref.size.split(",")
         if ("s" in size_prefs and 
                 "m" in size_prefs and 
@@ -133,14 +108,13 @@ class DogQuerySet(models.QuerySet):
                 "xl" in size_prefs):
             # no need to refine queryset
             return self.all()
-        else:
-            # include dogs of unknown size regardless of preferences
-            dogs_so_far = self.with_size_class('u')
+        else:  # Use Q objects to OR together the preferences instead of Union
+            unknown_size_dogs = self.with_size_class('u')
+            q_objects = Q(id__in=unknown_size_dogs)
             for size_class in size_prefs:
-                dogs_so_far = dogs_so_far.union(
-                    self.with_size_class(size_class)
-                )
-            return dogs_so_far
+                dogs_with_size = self.with_size_class(size_class)
+                q_objects |= Q(id__in=dogs_with_size)
+            return self.filter(q_objects)
 
 
 class DogManager(models.Manager):
