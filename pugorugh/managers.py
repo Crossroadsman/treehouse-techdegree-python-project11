@@ -5,7 +5,7 @@ from django.db.models import Q
 
 AGE_MAPPING = [
     ('b', 4),  # new puppy stage
-    ('y', 12),  # remainder of puppy stage
+    ('y', 18),  # remainder of puppy stage
     ('a', 84),  # up to seven years
     ('s', sys.maxsize),  # up to 700 quadrillion years (fingers-crossed for advancements in dog longevity)
 ]
@@ -62,6 +62,10 @@ class DogQuerySet(models.QuerySet):
     def with_status(self, user, status):
         """Returns all the dogs that the specified user has 'l'iked or
         'd'isliked or is 'u'ndecided.
+
+        if 'u': status_dogs are any dog without a UserDog for user;
+        otherwise, status_dogs are the dogs where the applicable UserDog
+        has that status.
         """
 
         if status == 'u':
@@ -69,6 +73,33 @@ class DogQuerySet(models.QuerySet):
                 userdog__user=user
             )
 
+        # first dog is first pk with corresponding status
+        #
+        # Reminder: when querying through a reverseFK or a MTM, the 
+        # behaviour of chained filters can be subtly different.
+        # Imagine there is a dog called 'Spot'. Current_user has marked
+        # Spot as 'l'. Someother_user has marked Spot as 'd'.
+        # Now consider the following chained filters. First:
+        # dogs_disliked_by_current_user = Dog.objects.filter(
+        #     userdog__user=current_user,
+        #     userdog__status='d'
+        # )
+        #
+        # This will return exactly what we might expect, a queryset that
+        # does not include Spot: he does not have a userdog relation that
+        # contains both current_user and 'd'.
+        #
+        # Second:
+        # dogs_reviewed_by_cu_and_disliked_by_someone = Dog.objects.filter(
+        #     userdog__user=current_user                
+        # ).filter(
+        #     userdog__status='d'
+        # )
+        #
+        # Spot WILL appear in this queryset because he does have a userdog
+        # relation containing the current_user, so he isn't filtered out
+        # by the first filter. He also has a userdog relation with 'd',
+        # so he's not filtered out by the second filter.
         return self.filter(
             userdog__user=user,
             userdog__status=status
@@ -116,6 +147,10 @@ class DogQuerySet(models.QuerySet):
                 q_objects |= Q(id__in=dogs_with_size)
             return self.filter(q_objects)
 
+    def with_prefs(self, user):
+        """Returns all the dogs that match the user's preferences"""
+        return self.with_ageprefs(user).with_genderprefs(user).with_sizeprefs(user)
+
 
 class DogManager(models.Manager):
 
@@ -133,3 +168,6 @@ class DogManager(models.Manager):
 
     def with_sizeprefs(self, user):
         return self.get_queryset().with_sizeprefs(user)
+
+    def with_prefs(self, user):
+        return self.get_queryset().with_prefs(user)

@@ -44,106 +44,101 @@ class DogRetrieveUpdateAPIView(
         """returns the first dog for the current user with the corresponding
         status (empty queryset if not dog with status)
         """
-        status = self.kwargs.get('status')
+        status = self.kwargs.get('status')[0]
         current_user = self.request.user
 
-        if status[0] not in ['l', 'd']:
-            # first dog is the first pk with no corresponding userdog
-            undecided_dogs = self.get_queryset().exclude(
-                userdog__user=current_user
-            )
-            first_dog_with_status = undecided_dogs.first()
+        status_dogs = self.get_queryset().with_status(current_user, status)
 
-        else:
-            # first dog is first pk with corresponding status
-            #
-            # Reminder: when querying through a reverseFK or a MTM, the 
-            # behaviour of chained filters can be subtly different.
-            # Imagine there is a dog called 'Spot'. Current_user has marked
-            # Spot as 'l'. Someother_user has marked Spot as 'd'.
-            # Now consider the following chained filters. First:
-            # dogs_disliked_by_current_user = Dog.objects.filter(
-            #     userdog__user=current_user,
-            #     userdog__status='d'
-            # )
-            #
-            # This will return exactly what we might expect, a queryset that
-            # does not include Spot: he does not have a userdog relation that
-            # contains both current_user and 'd'.
-            #
-            # Second:
-            # dogs_reviewed_by_cu_and_disliked_by_someone = Dog.objects.filter(
-            #     userdog__user=current_user                
-            # ).filter(
-            #     userdog__status='d'
-            # )
-            #
-            # Spot WILL appear in this queryset because he does have a userdog
-            # relation containing the current_user, so he isn't filtered out
-            # by the first filter. He also has a userdog relation with 'd',
-            # so he's not filtered out by the second filter.
-            status_dogs = self.get_queryset().filter(
-                userdog__user=current_user,
-                userdog__status=status[0]
-            )
-            first_dog_with_status = status_dogs.first()
+        if status == 'u':
+            # We want to filter on userprefs to ensure user only sees dogs
+            # they might like
+            pref_dogs = status_dogs.with_prefs(current_user)
+        else:  # 'l' or 'd'
+            # Note, we're ignoring userprefs because the user has explicitly
+            # expressed a like/dislike for this particular dog. General 
+            # preferences shouldn't override this expressed status
+            pref_dogs = status_dogs
+
+
+        first_dog_with_status = pref_dogs.first()
+
+        print("\n==== DEBUG DogRetrieveUpdateAPIView.get_first_dog_with_status ====")
+        print(f'status: {status}')
+        print(f'current_user: {current_user}')
+        print(f'status_dogs: {status_dogs}')
+        print(f'first with status: {first_dog_with_status}')
+        print("==== END DEBUG DogRetrieveUpdateAPIView.get_first_dog_with_status ====\n")
+
         return first_dog_with_status
 
     def get_next_dog_with_status(self):
         """returns the next dog (pk order, wraparound) with the corresponding
         status (empty queryset if none)
         """
-        status = self.kwargs.get('status')
+        status = self.kwargs.get('status')[0]
         current_user = self.request.user
-        current_dog_pk = self.kwargs.get('pk')
+        current_dog_pk = int(self.kwargs.get('pk'))
 
-        if status[0] not in ['l', 'd']:
+        status_dogs = self.get_queryset().with_status(current_user, status)
+
+        if status == 'u':
             # first dog is the next pk with no corresponding userdog
-            status_dogs = self.get_queryset().exclude(
-                userdog__user=current_user
-            )
             # We want to filter on userprefs to ensure user only sees dogs
             # they might like
-            #
-            # first, filter by preferred age
-            age_prefs = current_user.userpref.age
-
+            pref_dogs = status_dogs.with_prefs(current_user)
         else:  # 'l' or 'd'
             # first dog is next in pk with same userdog status
             #
             # Note, we're ignoring userprefs because the user has explicitly
             # expressed a like/dislike for this particular dog. General 
             # preferences shouldn't override this expressed status
-            status_dogs = self.get_queryset().filter(
-                userdog__user=current_user,
-                userdog__status=status[0]
-            )
+            pref_dogs = status_dogs
 
-        next_dog_with_status = status_dogs.filter(
+        next_pref_dog = pref_dogs.filter(
             id__gt=current_dog_pk
         ).first()
 
         # if there are no higher pks with status, wraparound to first
-        if next_dog_with_status is None:
-            next_dog_with_status = status_dogs.first()
+        if next_pref_dog is None:
+            next_pref_dog = pref_dogs.first()
 
-        return next_dog_with_status
+        print("\n==== DEBUG DogRetrieveUpdateAPIView.get_next_dog_with_status ====")
+        print(f'status: {status}')
+        print(f'current_user: {current_user}')
+        print(f'status_dogs: {status_dogs}')
+        print(f'pref_dogs: {pref_dogs}')
+        print(f'next with status: {next_pref_dog}')
+        print("==== END DEBUG DogRetrieveUpdateAPIView.get_next_dog_with_status ====\n")
+
+        return next_pref_dog
 
     # APIView Methods
     # ---------------
     def get_object(self):
-        current_dog_id = self.kwargs.get('pk')
+        current_dog_id = int(self.kwargs.get('pk'))
+
+        print("\n==== DEBUG DogRetrieveUpdateAPIView.get_object ====")
+        print(f'current_dog_id: {current_dog_id}')
+        print("==== END DEBUG DogRetrieveUpdateAPIView.get_object ====\n")
 
         # if pk is -1 (switching categories)
         # get the first dog in the category (wrapping around if necessary)
         if current_dog_id == -1:
             dog = self.get_first_dog_with_status()
 
+            print("--- DEBUG get_object: entering pk==-1 branch ----")
+            print(f'first_dog: {dog}')
+            print("--- END DEBUG get_object: entering pk==-1 branch ----")
+
+
         # pk is not -1 (it's a real pk)
         # get the first dog with the matching status with a pk > current_dog_id
         # (wrap around if necessary).
         else:
             dog = self.get_next_dog_with_status()
+            print("--- DEBUG get_object: entering pk!=-1 branch ----")
+            print(f'next_dog: {dog}')
+            print("--- END DEBUG get_object: entering pk!=-1 branch ----")
 
         #If no dogs at all with status, return 404
         if dog is None:
