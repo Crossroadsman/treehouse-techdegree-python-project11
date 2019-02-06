@@ -35,18 +35,18 @@ Project Status
 - [ ] Create serializers:
   - [x] `Dog` (all fields need to be revealed)
   - [ ] `UserPref` (all fields need to be revealed except `user`)
-- [ ] Create routes:
-  - [ ] get dogs:
-    - [ ] next liked: `/api/dog/<pk>/liked/next/`
-    - [ ] next disliked: `/api/dog/<pk>/disliked/next/`
-    - [ ] next undecided: `/api/dog/<pk>/undecided/next/`
-  - [ ] set dog's status:
-    - [ ] like: `/api/dog/<pk>/liked/`
-    - [ ] dislike: `/api/dog/<pk>/disliked/`
-    - [ ] undecided: `/api/dog/<pk>/undecided/`
-  - [ ] set user preferences:
-    - [ ] `/api/user/preferences/`
-- [ ] The supplied project uses Token-based Auth. This functionality should be
+- [x] Create routes:
+  - [x] get dogs:
+    - [x] next liked: `/api/dog/<pk>/liked/next/`
+    - [x] next disliked: `/api/dog/<pk>/disliked/next/`
+    - [x] next undecided: `/api/dog/<pk>/undecided/next/`
+  - [x] set dog's status:
+    - [x] like: `/api/dog/<pk>/liked/`
+    - [x] dislike: `/api/dog/<pk>/disliked/`
+    - [x] undecided: `/api/dog/<pk>/undecided/`
+  - [x] set user preferences:
+    - [x] `/api/user/preferences/`
+- [x] The supplied project uses Token-based Auth. This functionality should be
       maintained.
 - [ ] Unit Tests
 - [ ] Allow addition/deletion of dogs to the site
