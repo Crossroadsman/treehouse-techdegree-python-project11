@@ -43,6 +43,9 @@ class Dog(Model):
     # Custom Manager
     # --------------
     objects = DogManager()
+
+    def __str__(self):
+        return self.name
     
 
 class UserDog(Model):
@@ -61,6 +64,9 @@ class UserDog(Model):
         unique_together = (
             ('user', 'dog'),
         )
+
+    def __str__(self):
+        return "{} x {}".format(self.user, self.dog)
 
 
 class UserPref(Model):

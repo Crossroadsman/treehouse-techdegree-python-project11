@@ -1,0 +1,15 @@
+[run]
+source = backend,pugorugh,users
+
+omit =
+    # omit third-party code (upstream is responsible for testing)
+    venv/*
+    backend/wsgi.py
+
+    # omit any generated code
+    */migrations/*
+
+    # omit the tests themselves
+    */tests/*
+    */tests.py
+
