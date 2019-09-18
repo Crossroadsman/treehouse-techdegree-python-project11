@@ -25,8 +25,21 @@ class ModelTestCase(TestCase):
             'username': 'test user'
         }
 
+        self.test_userpref_data = {
+            # user
+            'age': 'b,y,a,s',
+            'gender': 'm,f',
+            'size': 's,m,l,xl'
+        }
+
         self.test_dog = Dog.objects.create(**self.test_dog_data)
         self.test_user = User.objects.create(**self.test_user_data)
+        self.test_userpref = UserPref.objects.create(
+            **{
+                'user': self.test_user,
+                **self.test_userpref_data
+            }
+        )
 
         self.test_data = None
         self.test_model = None
@@ -77,7 +90,8 @@ class UserDogModelTests(ModelTestCase):
 
         self.test_userdog_data = {
             'user': self.test_user,
-            'dog': self.test_dog
+            'dog': self.test_dog,
+            'status': 'l'
         }
 
         self.test_userdog = UserDog.objects.create(**self.test_userdog_data)
@@ -88,4 +102,19 @@ class UserDogModelTests(ModelTestCase):
             user=self.test_userdog_data['user'],
             dog=self.test_userdog_data['dog']
         )
+
+
+class UserPrefModelTests(ModelTestCase):
+
+    def setUp(self):
+        super().setUp()
+
+        self.abstract = False
+
+        self.test_data = {
+            'user': self.test_user,
+            **self.test_userpref_data
+        }
+        self.test_model = self.test_userpref
+        self.test_db_model = UserPref.objects.get(user=self.test_user)
 
