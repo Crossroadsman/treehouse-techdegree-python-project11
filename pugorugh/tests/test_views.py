@@ -1,0 +1,25 @@
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+
+from rest_framework.test import APIClient
+
+
+User = get_user_model()
+
+
+class UserRegisterViewTests(TestCase):
+
+    def test_valid_submission_creates_valid_user(self):
+        client = APIClient()
+        client.post(
+            '/api/user/',
+            {
+                'username': 'test_user',
+                'password': 'test_password'
+            },
+            format='json'
+        )
+
+        # Test wil fail if cannot get user
+        User.objects.get(username='test_user')
+
