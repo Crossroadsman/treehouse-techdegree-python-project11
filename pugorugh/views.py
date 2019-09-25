@@ -226,6 +226,8 @@ class UserPrefRetrieveAPIView(
         return self.update(request, *args, **kwargs)
 
     def perform_create(self, request, *args, **kwargs):
+        
+        # serializer is guaranteed to be passed in as a kwarg
         serializer.save(user=self.request.user)
 
     def post(self, request, *args, **kwargs):
