@@ -1,11 +1,16 @@
 Project 11: Pug or Ugh API with Django
 ======================================
 
+Requirements
+------------
+The minimum compatible version of Python is 3.6 (December 2016).
+Other requirements are specified in [`requirements.txt`][reqs]
+
 Installation
 ------------
 1. Clone the project
 2. Create and activate a venv
-3. Install dependencies (listed in requirements.txt)
+3. Install dependencies (listed in [`requirements.txt`][reqs])
 
 Usage
 -----
@@ -101,3 +106,8 @@ Project Status
   - [ ] >50% coverage
   - [ ] >75% coverage
 - [ ] PEP8 Compliant
+
+
+
+
+[reqs]: https://github.com/Crossroadsman/treehouse-techdegree-python-project11/blob/master/requirements.txt
