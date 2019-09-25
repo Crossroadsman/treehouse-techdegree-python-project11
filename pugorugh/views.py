@@ -62,12 +62,19 @@ class DogRetrieveUpdateAPIView(
 
         first_dog_with_status = pref_dogs.first()
 
-        print("\n==== DEBUG DogRetrieveUpdateAPIView.get_first_dog_with_status ====")
-        print(f'status: {status}')
-        print(f'current_user: {current_user}')
-        print(f'status_dogs: {status_dogs}')
-        print(f'first with status: {first_dog_with_status}')
-        print("==== END DEBUG DogRetrieveUpdateAPIView.get_first_dog_with_status ====\n")
+        # print("\n==== DEBUG DogRetrieveUpdateAPIView.get_first_dog_with_status ====")
+        # print(f'status: {status}')
+        # print(f'current_user: {current_user}')
+        # print(f'userpref: {current_user.userpref}')
+
+        # print(f'status_dogs: {status_dogs}')
+        # for dog in status_dogs:
+        #     print(f'{dog.name}: {dog.pk}')
+        # print(f'pref_dogs: {pref_dogs}')
+        # for dog in pref_dogs:
+        #     print(f'{dog.name}: {dog.pk}')
+        # print(f'first with status: {first_dog_with_status}')
+        # print("==== END DEBUG DogRetrieveUpdateAPIView.get_first_dog_with_status ====\n")
 
         return first_dog_with_status
 
@@ -117,18 +124,18 @@ class DogRetrieveUpdateAPIView(
     def get_object(self):
         current_dog_id = int(self.kwargs.get('pk'))
 
-        print("\n==== DEBUG DogRetrieveUpdateAPIView.get_object ====")
-        print(f'current_dog_id: {current_dog_id}')
-        print("==== END DEBUG DogRetrieveUpdateAPIView.get_object ====\n")
+        # print("\n==== DEBUG DogRetrieveUpdateAPIView.get_object ====")
+        # print(f'current_dog_id: {current_dog_id}')
+        # print("==== END DEBUG DogRetrieveUpdateAPIView.get_object ====\n")
 
         # if pk is -1 (switching categories)
         # get the first dog in the category (wrapping around if necessary)
         if current_dog_id == -1:
             dog = self.get_first_dog_with_status()
 
-            print("--- DEBUG get_object: entering pk==-1 branch ----")
-            print(f'first_dog: {dog}')
-            print("--- END DEBUG get_object: entering pk==-1 branch ----")
+            # print("--- DEBUG get_object: entering pk==-1 branch ----")
+            # print(f'first_dog: {dog}')
+            # print("--- END DEBUG get_object: entering pk==-1 branch ----")
 
 
         # pk is not -1 (it's a real pk)

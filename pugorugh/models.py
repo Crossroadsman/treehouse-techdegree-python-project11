@@ -44,6 +44,11 @@ class Dog(Model):
     # --------------
     objects = DogManager()
 
+    class Meta:
+        # Make explicit our intent that, unless otherwise specified in a 
+        # query, we want to get objects in the order they were created
+        ordering = ['pk',]
+
     def __str__(self):
         return self.name
     
