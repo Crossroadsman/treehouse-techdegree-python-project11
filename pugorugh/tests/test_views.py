@@ -46,7 +46,7 @@ class UserRegisterViewTests(TestCase):
         User.objects.get(username='test_user')
 
 
-class DogRetrieveUpdateAPIViewTests(TestCase):
+class ViewsWithUserTestCase(TestCase):
 
     # Setup and Teardown
     # ------------------
@@ -54,9 +54,6 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
         # Need:
         # - a user (with token for authentication),
         # - a userprefs, 
-        # - at least six dogs to enable
-        # - two userdogs for each of 'l', 'd', 'u'
-
         user = self.create_valid_user()
         self.create_valid_userprefs(user)
 
@@ -77,6 +74,96 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
 
         self.user = user2
         self.token = self.get_token(**user_data)
+   
+    # Helper Methods
+    # --------------
+    def create_valid_user(self, **kwargs):
+        """Because we are using the DRF to create tokens and the only
+        authentication we use is token-based, we need to go through the
+        API to create a user, rather than just go straight to the DB.
+        """
+        client = APIClient()
+        if kwargs:
+            user_data = kwargs
+        else:
+            user_data = VALID_USER_DATA
+        client.post(
+            '/api/user/',
+            user_data,
+            format='json'
+        )
+
+        user = User.objects.get(username=user_data['username'])
+        return user
+
+    def get_token(self, **kwargs):
+        """We have a dedicated URL where if we POST the user's credentials
+        we'll get back their token
+        """
+        client = APIClient()
+        if kwargs:
+            user_data = kwargs
+        else:
+            user_data = VALID_USER_DATA
+        response = client.post(
+            '/api/user/login/',
+            user_data,
+            format='json'
+        )
+        # print("---- helper function: get_token()'s response ----")
+        # print(response)
+        # print(response.status_code)
+        # print(response.data)
+        # print("---- end helper function ----")
+
+        return response.data['token']
+    
+    def authenticate_user(self):
+        """Ensure that all requests will have appropriate `Authorization: `
+        headers
+        """
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        return client
+
+    def create_valid_userprefs(self, user, **kwargs):
+        # the User create process (when going through the API)
+        # creates an empty userprefs object. Therefore, we need to
+        # check if the corresponding userprefs object already exists
+        try:
+            userprefs = UserPref.objects.get(user=user)
+        except UserPref.DoesNotExist:
+            userprefs = UserPref(user=user, **VALID_USERPREF_DATA)
+
+        if kwargs:
+            for key, value in kwargs.items():
+                setattr(userprefs, key, value)
+
+        userprefs.save()
+        return userprefs
+    
+    def debug_print_response_details(self, response):
+        print('==== DEBUG response details ====')
+        print('---- full response ----')
+        print(response)
+        print('---- end full response ----')
+        print(f'status code: {response.status_code}')
+        if hasattr(response, 'data'):
+            print(f'data: {response.data}')
+        print('==== END DEBUG response details ====')
+
+
+class DogRetrieveUpdateAPIViewTests(ViewsWithUserTestCase):
+
+    # Setup and Teardown
+    # ------------------
+    def setUp(self):
+        # Need ((s) from super):
+        # - (s) a user (with token for authentication),
+        # - (s) a userprefs, 
+        # - at least six dogs to enable
+        # - two userdogs for each of 'l', 'd', 'u'
+        super().setUp()
 
         test_dog_data = [
             {
@@ -146,71 +233,6 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
 
     # Helper Methods
     # --------------
-    def create_valid_user(self, **kwargs):
-        """Because we are using the DRF to create tokens and the only
-        authentication we use is token-based, we need to go through the
-        API to create a user, rather than just go straight to the DB.
-        """
-        client = APIClient()
-        if kwargs:
-            user_data = kwargs
-        else:
-            user_data = VALID_USER_DATA
-        client.post(
-            '/api/user/',
-            user_data,
-            format='json'
-        )
-
-        user = User.objects.get(username=user_data['username'])
-        return user
-
-    def get_token(self, **kwargs):
-        """We have a dedicated URL where if we POST the user's credentials
-        we'll get back their token
-        """
-        client = APIClient()
-        if kwargs:
-            user_data = kwargs
-        else:
-            user_data = VALID_USER_DATA
-        response = client.post(
-            '/api/user/login/',
-            user_data,
-            format='json'
-        )
-        # print("---- helper function: get_token()'s response ----")
-        # print(response)
-        # print(response.status_code)
-        # print(response.data)
-        # print("---- end helper function ----")
-
-        return response.data['token']
-
-    def authenticate_user(self):
-        """Ensure that all requests will have appropriate `Authorization: `
-        headers
-        """
-        client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
-        return client
-
-    def create_valid_userprefs(self, user, **kwargs):
-        # the User create process (when going through the API)
-        # creates an empty userprefs object. Therefore, we need to
-        # check if the corresponding userprefs object already exists
-        try:
-            userprefs = UserPref.objects.get(user=user)
-        except UserPref.DoesNotExist:
-            userprefs = UserPref(user=user, **VALID_USERPREF_DATA)
-
-        if kwargs:
-            for key, value in kwargs.items():
-                setattr(userprefs, key, value)
-
-        userprefs.save()
-        return userprefs
-
     def create_valid_dog(self, **kwargs):
         if kwargs:
             dog = Dog.objects.create(**kwargs)
@@ -226,15 +248,6 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
         )
         return userdog
 
-    def debug_print_response_details(self, response):
-        print('==== DEBUG response details ====')
-        print('---- full response ----')
-        print(response)
-        print('---- end full response ----')
-        print(f'status code: {response.status_code}')
-        print(f'data: {response.data}')
-        print('==== END DEBUG response details ====')
-    
     # Tests
     # -----
     def test_getting_dog_pk_negative1_retrieves_first_dog_with_status(self):
@@ -302,10 +315,6 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
 
         response = self.client.get(uri)
 
-        # print('==== DEBUG test body: GET response ====')
-        # self.debug_print_response_details(response)
-        # print('==== END DEBUG test body: GET response ====')
-
         self.assertEqual(response.status_code, 404)
 
 
@@ -341,7 +350,7 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
         self.assertEqual(userdog.status, expected_new_status)
 
     def test_putting_status_deletes_an_existing_explicit_userdog_status(self):
-        """  [liked | disliked] --> undecided """
+        """ [liked | disliked] --> undecided """
         pk = 5  # disliked
         userdog = UserDog.objects.get(dog=pk)
         old_status = userdog.status
@@ -355,11 +364,34 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
             userdog = UserDog.objects.get(dog=pk)
         
 
-class UserPrefRetrieveAPIViewTests(TestCase):
+class UserPrefRetrieveAPIViewTests(ViewsWithUserTestCase):
 
-    # get the userpref values for a user
-    def test_get(self):
-        pass
+    # Setup and Teardown
+    # ------------------
+    def setUp(self):
+        # Need ((s) from super):
+        # - (s) a user (with token for authentication),
+        # - (s) a userprefs, 
+        super().setUp()
+        self.client = self.authenticate_user()
+
+    # Tests
+    # -----
+    def test_get_returns_userprefs_for_current_user(self):
+        uri = '/api/user/preferences/'
+
+        response = self.client.get(uri)
+
+        # print('==== DEBUG test body: GET response ====')
+        # self.debug_print_response_details(response)
+        # print('==== END DEBUG test body: GET response ====')
+
+        self.assertEqual(response.status_code, 200)
+        for field in ['age', 'gender', 'size']:
+            self.assertEqual(
+                getattr(self.user.userpref, field),
+                response.data[field])
+
 
     # put (update) the userpref values for a user
     def test_put(self):
