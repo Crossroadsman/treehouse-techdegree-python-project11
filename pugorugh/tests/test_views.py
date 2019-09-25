@@ -141,6 +141,8 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
         #     print("{}: {}".format(dog.name, dog.pk))
         # print("---- end debug setUp() ----")
 
+        self.client = self.authenticate_user()
+
 
     # Helper Methods
     # --------------
@@ -184,6 +186,14 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
         # print("---- end helper function ----")
 
         return response.data['token']
+
+    def authenticate_user(self):
+        """Ensure that all requests will have appropriate `Authorization: `
+        headers
+        """
+        client = APIClient()
+        client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        return client
 
     def create_valid_userprefs(self, user, **kwargs):
         # the User create process (when going through the API)
@@ -230,10 +240,6 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
         like or dislike, even if they don't meet my general preferences.
         """
        
-        # Include an appropriate "Authorization:" header on all requests.
-        client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
-
         for key, value in {
             'liked': 'lucy',  # 2nd is Rosie
             'undecided': 'frankie',  # 2nd is Ted
@@ -242,7 +248,7 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
 
             status = key
             uri = '/api/dog/-1/{}/next/'.format(status)
-            response = client.get(uri)
+            response = self.client.get(uri)
 
             # print('---- debug test body: GET response ----')
             # print(response)
