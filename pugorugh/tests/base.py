@@ -33,7 +33,7 @@ VALID_DOG_DATA = [
     {
         'name': 'frankie',
         'image_filename': 'test_image_03.jpg',
-        'age': 70,
+        'age': 85,
         'gender': 'f',
         'size': 'l'
     },
