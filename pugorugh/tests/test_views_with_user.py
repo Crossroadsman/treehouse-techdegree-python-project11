@@ -5,29 +5,14 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 
 from pugorugh.models import UserPref, Dog, UserDog
-from .test_views import VALID_USER_DATA
+from .base import (VALID_USER_DATA, VALID_USERPREF_DATA, VALID_DOG_DATA,
+                   VALID_STATUS_LIST, PugOrUghTestCase)
 
 
 User = get_user_model()
 
 
-VALID_USERPREF_DATA = {
-    # user
-    'age': "b,y",
-    'gender': 'f',
-    'size': 'm,l,xl'
-}
-
-VALID_DOG_DATA = {
-    'name': 'lucy',
-    'image_filename': 'test_image_01.jpg',
-    'age': 52,
-    'gender': 'f',
-    'size': 'l'
-}
-
-
-class ViewsWithUserTestCase(TestCase):
+class ViewsWithUserTestCase(PugOrUghTestCase):
     """This subclass defines the common requirements for testing views
     that depend on an authenticated user being available
     """
@@ -149,88 +134,10 @@ class DogRetrieveUpdateAPIViewTests(ViewsWithUserTestCase):
         # - two userdogs for each of 'l', 'd', 'u'
         super().setUp()
 
-        test_dog_data = [
-            {
-                'name': 'rosie',
-                'image_filename': 'test_image_02.jpg',
-                'age': 20,
-                'gender': 'f',
-                'size': 'l'
-            },
-            {
-                'name': 'frankie',
-                'image_filename': 'test_image_03.jpg',
-                'age': 70,
-                'gender': 'f',
-                'size': 'l'
-            },
-            {
-                'name': 'ted',
-                'image_filename': 'test_image_04.jpg',
-                'age': 51,
-                'gender': 'm',
-                'size': 's'
-            },
-            {
-                'name': 'molly',
-                'image_filename': 'test_image_05.jpg',
-                'age': 25,
-                'gender': 'f',
-                'size': 'xl'
-            },
-            {
-                'name': 'dougie',
-                'image_filename': 'test_image_06.jpg',
-                'age': 8,
-                'gender': 'm',
-                'size': 'l'
-            },
-        ]
-
-        self.create_valid_dog()
-        for dog_data in test_dog_data:
-            self.create_valid_dog(**dog_data)
-
-        all_dogs = Dog.objects.all()
-        for i, status in enumerate(['l', 'l', 'u', 'u', 'd', 'd']):
-            if status == 'u':  # don't create a userdog
-                continue
-            self.create_valid_userdog(
-                user=self.user,
-                dog=all_dogs[i],
-                status=status
-            )
-
-        # print("---- debug setUp() ----")
-        # for user in User.objects.all():
-        #     print(f'user: {user}')
-        #     print(f'userpref: {user.userpref}')
-        # for userdog in UserDog.objects.all():
-        #     print(f'userdog: {userdog}')
-        # print("all dogs:")
-        # for dog in all_dogs:
-        #     print("{}: {}".format(dog.name, dog.pk))
-        # print("---- end debug setUp() ----")
-
+        self.create_some_dogs(VALID_DOG_DATA)
+        self.create_some_userdogs(self.user, VALID_STATUS_LIST)
+        
         self.client = self.authenticate_user()
-
-
-    # Helper Methods
-    # --------------
-    def create_valid_dog(self, **kwargs):
-        if kwargs:
-            dog = Dog.objects.create(**kwargs)
-        else:
-            dog = Dog.objects.create(**VALID_DOG_DATA)
-        return dog
-
-    def create_valid_userdog(self, user, dog, status):
-        userdog = UserDog.objects.create(
-            user=user,
-            dog=dog,
-            status=status
-        )
-        return userdog
 
     # Tests
     # -----
@@ -300,7 +207,6 @@ class DogRetrieveUpdateAPIViewTests(ViewsWithUserTestCase):
         response = self.client.get(uri)
 
         self.assertEqual(response.status_code, 404)
-
 
     def test_putting_status_updates_an_existing_explicit_userdog_status(self):
         """ liked <---> disliked """
@@ -390,9 +296,9 @@ class UserPrefRetrieveAPIViewTests(ViewsWithUserTestCase):
             format='json'
         )
 
-        print('==== DEBUG test body: PUT response ====')
-        self.debug_print_response_details(response)
-        print('==== END DEBUG test body: PUT response ====')
+        # print('==== DEBUG test body: PUT response ====')
+        # self.debug_print_response_details(response)
+        # print('==== END DEBUG test body: PUT response ====')
 
         self.assertEqual(response.status_code, 200)
         for field in ['age', 'gender', 'size']:
@@ -400,8 +306,3 @@ class UserPrefRetrieveAPIViewTests(ViewsWithUserTestCase):
                 new_prefs[field],
                 getattr(self.user.userpref, field)
             )
-
-    # post (create) the userpref values for a user
-    def test_post(self):
-        uri = '/api/user/preferences/'
-        pass

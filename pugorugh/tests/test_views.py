@@ -3,14 +3,10 @@ from django.test import TestCase
 
 from rest_framework.test import APIClient
 
+from .base import VALID_USER_DATA
+
 
 User = get_user_model()
-
-
-VALID_USER_DATA = {
-    'username': 'test_user',
-    'password': 'test_password'
-}
 
 
 class UserRegisterViewTests(TestCase):
