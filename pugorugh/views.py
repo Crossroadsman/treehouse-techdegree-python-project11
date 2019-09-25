@@ -109,13 +109,13 @@ class DogRetrieveUpdateAPIView(
         if next_pref_dog is None:
             next_pref_dog = pref_dogs.first()
 
-        print("\n==== DEBUG DogRetrieveUpdateAPIView.get_next_dog_with_status ====")
-        print(f'status: {status}')
-        print(f'current_user: {current_user}')
-        print(f'status_dogs: {status_dogs}')
-        print(f'pref_dogs: {pref_dogs}')
-        print(f'next with status: {next_pref_dog}')
-        print("==== END DEBUG DogRetrieveUpdateAPIView.get_next_dog_with_status ====\n")
+        # print("\n==== DEBUG DogRetrieveUpdateAPIView.get_next_dog_with_status ====")
+        # print(f'status: {status}')
+        # print(f'current_user: {current_user}')
+        # print(f'status_dogs: {status_dogs}')
+        # print(f'pref_dogs: {pref_dogs}')
+        # print(f'next with status: {next_pref_dog}')
+        # print("==== END DEBUG DogRetrieveUpdateAPIView.get_next_dog_with_status ====\n")
 
         return next_pref_dog
 
@@ -143,9 +143,9 @@ class DogRetrieveUpdateAPIView(
         # (wrap around if necessary).
         else:
             dog = self.get_next_dog_with_status()
-            print("--- DEBUG get_object: entering pk!=-1 branch ----")
-            print(f'next_dog: {dog}')
-            print("--- END DEBUG get_object: entering pk!=-1 branch ----")
+            # print("--- DEBUG get_object: entering pk!=-1 branch ----")
+            # print(f'next_dog: {dog}')
+            # print("--- END DEBUG get_object: entering pk!=-1 branch ----")
 
         #If no dogs at all with status, return 404
         if dog is None:

@@ -225,6 +225,15 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
             status=status
         )
         return userdog
+
+    def debug_print_response_details(self, response):
+        print('==== DEBUG response details ====')
+        print('---- full response ----')
+        print(response)
+        print('---- end full response ----')
+        print(f'status code: {response.status_code}')
+        print(f'data: {response.data}')
+        print('==== END DEBUG response details ====')
     
     # Tests
     # -----
@@ -250,12 +259,6 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
             uri = '/api/dog/-1/{}/next/'.format(status)
             response = self.client.get(uri)
 
-            # print('---- debug test body: GET response ----')
-            # print(response)
-            # print(response.status_code)
-            # print(response.data)
-            # print('---- end debug test body ----')
-
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data['name'], value)
         
@@ -263,7 +266,29 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
     def test_getting_dog_pk_positive_retrieves_next_dog_with_status(self):
         # similar to previous test except we want the next (with wraparound)
         # dog with the corresponding status instead of the first
-        pass
+
+        for key, values in {
+            'liked': ['lucy', 'rosie'],
+            'undecided': ['frankie', 'ted'],
+            'disliked': ['molly', 'dougie']
+        }.items():
+            for i, name in enumerate(values):
+                expected_next_dog_name = values[(i + 1) % len(values)]
+
+                status = key
+                object = Dog.objects.get(name=name)
+                uri = f'/api/dog/{object.pk}/{status}/next/'
+                response = self.client.get(uri)
+
+                print('==== DEBUG test body: GET response ====')
+                print(f'current dog: {object.name} ({object.pk})')
+                self.debug_print_response_details(response)
+                print('==== END DEBUG test body: GET response ====')
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.data['name'], expected_next_dog_name)
+
+
 
     def test_putting_a_status_updates_an_existing_userdog_status(self):
         pass
