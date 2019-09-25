@@ -8,3 +8,4 @@ treehouse-stub-demo-files/** linguist-vendored
 static/css/* linguist-vendored
 static/icons/* linguist-vendored
 static/js/vendor/** linguist-vendorered
+static/jsx/* linguist-vendored
