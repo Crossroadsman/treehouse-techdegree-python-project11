@@ -264,8 +264,9 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
         
 
     def test_getting_dog_pk_positive_retrieves_next_dog_with_status(self):
-        # similar to previous test except we want the next (with wraparound)
-        # dog with the corresponding status instead of the first
+        """similar to previous test except we want the next (with wraparound)
+        dog with the corresponding status instead of the first
+        """
 
         for key, values in {
             'liked': ['lucy', 'rosie'],
@@ -280,22 +281,79 @@ class DogRetrieveUpdateAPIViewTests(TestCase):
                 uri = f'/api/dog/{object.pk}/{status}/next/'
                 response = self.client.get(uri)
 
-                print('==== DEBUG test body: GET response ====')
-                print(f'current dog: {object.name} ({object.pk})')
-                self.debug_print_response_details(response)
-                print('==== END DEBUG test body: GET response ====')
-
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(response.data['name'], expected_next_dog_name)
 
+    def test_getting_invalid_pk_returns_404(self):
+        """If there are no dogs with the relevant status, return a 404"""
+
+        # unlike all liked dogs
+        likes = UserDog.objects.filter(
+            user=self.user,
+            status='l'
+        )
+        for userdog in likes:
+            userdog.status = 'u'
+            userdog.save()
+
+        # Note the actual PK doesn't matter (as long as it is a postive 
+        # integer) when asking for the next dog.
+        uri = '/api/dog/1/liked/next/'
+
+        response = self.client.get(uri)
+
+        # print('==== DEBUG test body: GET response ====')
+        # self.debug_print_response_details(response)
+        # print('==== END DEBUG test body: GET response ====')
+
+        self.assertEqual(response.status_code, 404)
 
 
-    def test_putting_a_status_updates_an_existing_userdog_status(self):
-        pass
+    def test_putting_status_updates_an_existing_explicit_userdog_status(self):
+        """ liked <---> disliked """
+        pk = 1  # liked
+        userdog = UserDog.objects.get(dog=pk)
+        old_status = userdog.status
+        expected_old_status = 'l'
 
-    def test_putting_a_status_creates_a_new_userdog_status(self):
-        pass
+        uri = f'/api/dog/{userdog.dog.pk}/disliked/'
+        self.client.put(uri)
 
+        expected_new_status = 'd'
+        userdog = UserDog.objects.get(dog=pk)
+        
+        self.assertEqual(old_status, expected_old_status)
+        self.assertEqual(userdog.status, expected_new_status)
+        
+
+    def test_putting_status_creates_a_new_userdog_status(self):
+        """ undecided --> [liked | disliked] """
+        pk = 3  # undecided
+        with self.assertRaises(UserDog.DoesNotExist):
+            userdog = UserDog.objects.get(dog=pk)
+
+        uri = f'/api/dog/{pk}/liked/'
+        self.client.put(uri)
+
+        expected_new_status = 'l'
+        userdog = UserDog.objects.get(dog=pk)
+        
+        self.assertEqual(userdog.status, expected_new_status)
+
+    def test_putting_status_deletes_an_existing_explicit_userdog_status(self):
+        """  [liked | disliked] --> undecided """
+        pk = 5  # disliked
+        userdog = UserDog.objects.get(dog=pk)
+        old_status = userdog.status
+        expected_old_status = 'd'
+
+        uri = f'/api/dog/{userdog.dog.pk}/undecided/'
+        self.client.put(uri)
+
+        self.assertEqual(old_status, expected_old_status)
+        with self.assertRaises(UserDog.DoesNotExist):
+            userdog = UserDog.objects.get(dog=pk)
+        
 
 class UserPrefRetrieveAPIViewTests(TestCase):
 
