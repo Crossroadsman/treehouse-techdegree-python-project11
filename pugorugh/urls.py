@@ -35,14 +35,17 @@ urlpatterns = [
     re_path(r'^api/user/$', views.UserRegisterView.as_view(), name='register-user'),
 
     # Application
-    re_path(r'^$', TemplateView.as_view(template_name='index.html')),
+    re_path(r'^$', TemplateView.as_view(template_name='index.html'), name='home'),
     re_path(r'^favicon\.ico$', RedirectView.as_view(url='/static/icons/favicon.ico', permanent=True)),
 
     # API
     re_path(r'^api/dog/(?P<pk>[-\d]+)/(?P<status>\w+)/next/$', views.DogRetrieveUpdateAPIView.as_view(), name="next-dog"),
     re_path(r'^api/dog/(?P<pk>[-\d]+)/(?P<status>\w+)/$', views.DogRetrieveUpdateAPIView.as_view(), name="set-status"),
     re_path(r'^api/user/preferences/$', views.UserPrefRetrieveAPIView.as_view(), name="set-preferences"),
-    
+
+    # Add/Delete Dog
+    re_path(r'^add-dog/$', views.add_dog, name="add-dog"),
+    re_path(r'^delete-dog/(?P<pk>[-\d]+)/$', views.delete_dog, name="delete-dog"),
 ]
 
 # Apply Format Suffixes

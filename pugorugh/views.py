@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 
 from rest_framework import permissions
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
@@ -8,6 +10,9 @@ from rest_framework.response import Response
 
 from . import serializers
 from . import models
+
+
+User = get_user_model()
 
 
 # DRF provides `Request` objects (extensions of Django's HttpRequest).
@@ -23,7 +28,7 @@ class UserRegisterView(CreateAPIView):
     # Override the restrictive permissions specified in settings.py
     permission_classes = (permissions.AllowAny,)
     
-    model = get_user_model()
+    model = User
     serializer_class = serializers.UserSerializer
 
 
@@ -232,3 +237,20 @@ class UserPrefRetrieveAPIView(
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
+
+
+#@login_required
+def add_dog(request):
+    user = request.user
+    print("You just loaded the add_dog view")
+    print(f"You are user {user}")
+    print("redirecting back to the app!")
+    return redirect('home')
+
+#@login_required
+def delete_dog(request):
+    print("You just loaded the delete_dog view")
+    print(f"You are user {user}")
+    print("redirecting back to the app!")
+    return redirect('home')
+
