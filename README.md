@@ -19,7 +19,7 @@ Usage
 Project Status
 --------------
 ### vs Specs from Project Instructions ###
-- [ ] Create application with the following models and fieldnames:
+- [x] Create application with the following models and fieldnames:
   - [x] `Dog` model
     - [x] `name`
     - [x] `image_filename`
@@ -37,9 +37,9 @@ Project Status
     - [x] `age` ('b' baby, 'y' young, 'a' adult, 's' senior)
     - [x] `gender` ('m' male, 'f' female)
     - [x] `size` ('s' small, 'm' medium, 'l' large, 'xl' extra large)
-- [ ] Create serializers:
+- [x] Create serializers:
   - [x] `Dog` (all fields need to be revealed)
-  - [ ] `UserPref` (all fields need to be revealed except `user`)
+  - [x] `UserPref` (all fields need to be revealed except `user`)
 - [x] Create routes:
   - [x] get dogs:
     - [x] next liked: `/api/dog/<pk>/liked/next/`
@@ -53,11 +53,11 @@ Project Status
     - [x] `/api/user/preferences/`
 - [x] The supplied project uses Token-based Auth. This functionality should be
       maintained.
-- [ ] Unit Tests
+- [x] Unit Tests
 - [ ] Allow addition/deletion of dogs to the site
 - [ ] Add additional data fields to the models to increase app functionality
 - [ ] Add additional routes to the site to increase functionality
-- [ ] >75% Test coverage
+- [x] >75% Test coverage
 
 ### vs Specs from How You Will Be Graded ###
 - [ ] Script runs correctly
