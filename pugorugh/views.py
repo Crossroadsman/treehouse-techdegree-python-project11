@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 
 from rest_framework import permissions
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
@@ -8,6 +10,7 @@ from rest_framework.response import Response
 
 from . import serializers
 from . import models
+from .forms import AddDogForm
 
 
 # DRF provides `Request` objects (extensions of Django's HttpRequest).
@@ -232,3 +235,40 @@ class UserPrefRetrieveAPIView(
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
+
+def add_dog(request):
+    if request.method == "POST":
+        # submit dog
+        form = AddDogForm(
+            request.POST,
+            request.FILES
+        )
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('index'))
+    
+    else:  # GET
+        form = AddDogForm()
+    
+    template = 'pugorugh/add_dog.html'
+    context = {'form': form}
+    return render(request, template, context)
+
+def delete_list(request):
+    dogs = models.Dog.objects.all()
+    template = 'pugorugh/delete_list.html'
+    context = {'dogs': dogs}
+    return render(request, template, context)
+
+def delete_dog(request, pk):
+    dog = get_object_or_404(models.Dog, pk=pk)
+
+    if request.method == "POST":
+        
+        dog.delete()
+        return redirect(reverse('index'))
+
+    else:  # GET
+        template = 'pugorugh/delete_dog.html'
+        context = {'dog': dog}
+        return render(request, template, context)

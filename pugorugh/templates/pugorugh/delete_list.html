@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+  </head>
+  
+  <body>
+    <h1>CHOOSE A DOG TO DELETE</h1>
+
+    <ol>
+      {% for dog in dogs %}
+        <li>
+            {{ dog.id }} {{ dog.name }}
+            <a href="{% url 'delete_dog' pk=dog.id %}">DELETE</a>
+        </li>
+      {% endfor %}
+    </ol>
+  </body>
+</html>
