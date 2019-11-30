@@ -236,6 +236,7 @@ class UserPrefRetrieveAPIView(
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
+
 def add_dog(request):
     if request.method == "POST":
         # submit dog
@@ -254,11 +255,13 @@ def add_dog(request):
     context = {'form': form}
     return render(request, template, context)
 
+
 def delete_list(request):
     dogs = models.Dog.objects.all()
     template = 'pugorugh/delete_list.html'
     context = {'dogs': dogs}
     return render(request, template, context)
+
 
 def delete_dog(request, pk):
     dog = get_object_or_404(models.Dog, pk=pk)
