@@ -28,7 +28,11 @@ class AddDogForm(forms.ModelForm):
             'age',
             'gender',
             'size',
+            # Optional fields follow:
             'breed',
+            # Extra fields (optional) follow:
+            'favourite_toy',
+            'favourite_treat',
         )
 
     # The ModelForm's save() method creates and saves the database object.

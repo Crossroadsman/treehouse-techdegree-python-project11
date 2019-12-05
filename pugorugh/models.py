@@ -40,6 +40,11 @@ class Dog(Model):
     # ---------------
     breed = CharField(max_length=255, blank=True, default='')
 
+    # Extra Fields (Optional)
+    # -----------------------
+    favourite_toy = CharField(max_length=255, blank=True, default='')
+    favourite_treat = CharField(max_length=255, blank=True, default='')
+
     # Custom Manager
     # --------------
     objects = DogManager()
