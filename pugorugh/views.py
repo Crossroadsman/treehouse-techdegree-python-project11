@@ -267,9 +267,17 @@ def delete_dog(request, pk):
     dog = get_object_or_404(models.Dog, pk=pk)
 
     if request.method == "POST":
-        
-        dog.delete()
-        return redirect(reverse('index'))
+
+        if 'confirm' in request.POST:  # delete the dog
+            print(f"deleting {dog.name} ({dog.pk})")
+            dog.delete()
+            dogs = models.Dog.objects.all()
+            for dog in dogs:
+                print(f"{dog.pk}: {dog.name}")
+            return redirect(reverse('index'))
+
+        else:  # do not delete the dog, go back to previous screen
+            return redirect(reverse('delete_list'))
 
     else:  # GET
         template = 'pugorugh/delete_dog.html'
