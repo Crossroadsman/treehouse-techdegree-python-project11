@@ -1,6 +1,9 @@
+import random
+
 from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.db.models import Prefetch
 
 from rest_framework import permissions
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
@@ -28,6 +31,67 @@ class UserRegisterView(CreateAPIView):
     
     model = get_user_model()
     serializer_class = serializers.UserSerializer
+
+
+class RandomDogRetrieveAPIView(RetrieveAPIView):
+    """View for getting a random dog"""
+
+    serializer_class = serializers.DogSerializer
+
+    def get_object(self):
+        dogs = models.Dog.objects.all()
+        dog = random.choice(dogs)
+        return dog
+
+class NeedMoreLoveDogRetrieveAPIView(RetrieveAPIView):
+    """View for getting a dog that needs more love
+
+    Specifically, we are going to return a random dog from the pool
+    of dogs who have the fewest likes. If there are any dogs with no
+    likes, this will return a random dog that has no likes. If dog with
+    the fewest likes has, say, 3 likes, this will return a random dog
+    that has 3 likes.
+    """
+
+    serializer_class = serializers.DogSerializer
+
+    def get_object(self):
+        # We want to get all the dogs and the count of their likes in
+        # UserDog.
+    
+        # First, create a filtered queryset of UserDogs that Prefetch
+        # is going to use:
+        likes = models.UserDog.objects.filter(status='l')
+
+        # Now we want to pass a custom Prefetch object into prefetch_related
+        # see:
+        # https://docs.djangoproject.com/en/2.2/ref/models/querysets/#django.db.models.Prefetch
+        fdogs = models.Dog.objects.prefetch_related(
+            Prefetch('userdog_set', queryset=likes)
+        )
+    
+        # We can now get the number of likes each dog has by accessing
+        # the fdog.userdog_set.count() method
+        print('---DEBUG: dogs and likes count---')
+        for dog in fdogs:
+            print(f'{dog.name}: {dog.userdog_set.count()})')
+        # note that, e.g., Rosie who has 2 likes returns 2 and Muffin, 
+        # who has no likes but a dislike returns 0
+        # (if we weren't using the filtered prefetch then the count would
+        # return 1 for Muffin)
+
+        dog_list = sorted(
+            [(dog, dog.userdog_set.count()) for dog in fdogs],
+            key=lambda x: x[1]
+        )
+
+        unloved = []
+        for i, dog in enumerate(dog_list):
+            if dog[1] > dog_list[0][1]:
+                break
+            unloved.append(dog[0])
+
+        return random.choice(unloved)
 
 
 class DogRetrieveUpdateAPIView(

@@ -43,6 +43,9 @@ urlpatterns = [
     re_path(r'^api/dog/(?P<pk>[-\d]+)/(?P<status>\w+)/$', views.DogRetrieveUpdateAPIView.as_view(), name="set-status"),
     re_path(r'^api/user/preferences/$', views.UserPrefRetrieveAPIView.as_view(), name="set-preferences"),
 
+    re_path(r'^api/dog/random/$', views.RandomDogRetrieveAPIView.as_view(), name="random-dog"),
+    re_path(r'^api/dog/needs-love/$', views.NeedMoreLoveDogRetrieveAPIView.as_view(), name="needs-love-dog"),
+
     # Additional App Views
     re_path(r'dog/add/$', views.add_dog, name='add_dog'),
     re_path(r'dog/delete/$', views.delete_list, name='delete_list'),
