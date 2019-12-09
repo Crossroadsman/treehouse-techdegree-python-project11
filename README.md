@@ -54,9 +54,9 @@ Project Status
 - [x] The supplied project uses Token-based Auth. This functionality should be
       maintained.
 - [x] Unit Tests
-- [ ] Allow addition/deletion of dogs to the site
-- [ ] Add additional data fields to the models to increase app functionality
-- [ ] Add additional routes to the site to increase functionality
+- [x] Allow addition/deletion of dogs to the site
+- [x] Add additional data fields to the models to increase app functionality
+- [x] Add additional routes to the site to increase functionality
 - [x] >75% Test coverage
 
 ### vs Specs from How You Will Be Graded ###
