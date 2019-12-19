@@ -52,7 +52,7 @@ def process_upload(file, pk, upload_dir=settings.DOG_UPLOAD_DIR):
     new_name = rename(file.name, pk)
 
     # 2
-    handle_uploaded_file(file, settings.DOG_UPLOAD_DIR, new_name)
+    handle_uploaded_file(file, upload_dir, new_name)
 
     # 3
     return new_name
