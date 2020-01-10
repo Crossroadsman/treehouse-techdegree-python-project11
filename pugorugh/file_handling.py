@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from django.conf import settings
@@ -22,16 +23,14 @@ def handle_uploaded_file(uploaded_file, path, name):
     `name` is the filename to be written to disk
     """
 
-    # (w)rite (b)inary mode (+)can update
-    if settings.DEBUG:
-        print(f'creating file at {path} called {name}')
+    logging.debug(f'creating file at {path} called {name}')
     
+    # (w)rite (b)inary mode (+)can update
     with open(f'{path}/{name}', 'wb+') as target_file:
         for chunk in uploaded_file.chunks():
             target_file.write(chunk)
 
-    if settings.DEBUG:
-        print('done')
+    logging.debug(f'done creating file')
 
 
 # Note we might need to set MEDIA_URL and MEDIA_ROOT in settings.py (and
