@@ -115,11 +115,7 @@ class AddDogFormTestCase(TestCase):
         test_files = {'image': test_image_file}
         
         test_form = AddDogForm(test_data, test_files)
-
-        logging.debug(test_form)
-
         test_form.is_valid()
-
         logging.debug(test_form.errors.as_data())
 
         test_form.save()
