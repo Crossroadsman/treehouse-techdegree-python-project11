@@ -1,4 +1,9 @@
+from io import BytesIO
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
+
+from PIL import Image
 
 from pugorugh.models import UserPref, Dog, UserDog
 
@@ -113,3 +118,44 @@ class PugOrUghTestCase(TestCase):
                 status=status
             )
 
+    def make_image_data(self):
+        """Creates an in-memory byte stream containing image data
+        then returns it.
+        """
+        
+        # Create the in-memory binary stream object
+        image_data = BytesIO()
+
+        # https://pillow.readthedocs.io/en/stable/handbook/concepts.html
+        image_settings = {
+            'mode': "RGB",
+            'size': (128, 128)
+        }
+        # `fp` : A filename (string), pathlib.Path object or file object
+        # `format` : If None, format is inferred from file extension
+        #      (explicitly setting format is required if using a file
+        #      object instead of a filename)
+        stream_settings = {
+            'fp': image_data,
+            'format': 'JPEG',
+
+        }
+        image_object = Image.new(**image_settings)
+        image_object.save(**stream_settings)  # write img data to stream
+
+        return image_data
+
+    def make_image_file(self):
+        """Creates an in-memory image file and returns it."""
+        image_data = self.make_image_data()
+
+        # Note, when getting the string representation of the file it is
+        # described as:
+        # `test_file.jpg (text/plain)`
+        # It doesn't seem to be an issue that Django thinks it is a text
+        # file:
+        # Running readlines on the file reveals it to be a binary file
+        # And PIL is able to read the file without complaint.
+        image_file = SimpleUploadedFile('test_file.jpg', image_data.getvalue())
+
+        return image_file

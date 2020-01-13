@@ -61,5 +61,8 @@ class AddDogForm(forms.ModelForm):
         """This only works because we've explicitly made `pk` our "order by"
         property on the model.
         """
-        return Dog.objects.last().pk + 1
+        if Dog.objects.all().count() != 0:
+            return Dog.objects.last().pk + 1
+        else:
+            return 1
 
