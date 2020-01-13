@@ -1,3 +1,4 @@
+import logging
 import random
 
 from django.contrib.auth import get_user_model
@@ -333,11 +334,9 @@ def delete_dog(request, pk):
     if request.method == "POST":
 
         if 'confirm' in request.POST:  # delete the dog
-            print(f"deleting {dog.name} ({dog.pk})")
+            logging.debug(f"deleting {dog.name} ({dog.pk})...")
             dog.delete()
-            dogs = models.Dog.objects.all()
-            for dog in dogs:
-                print(f"{dog.pk}: {dog.name}")
+            logging.debug(f"Deleted dog. Remaining dogs: {models.Dog.objects.all()}")
             return redirect(reverse('index'))
 
         else:  # do not delete the dog, go back to previous screen

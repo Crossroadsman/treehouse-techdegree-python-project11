@@ -196,8 +196,7 @@ class DeleteListViewTests(PugOrUghViewTestCase):
     # Test Methods
     # ------------
     
-    # TODO - class-specific tests
-    
+    # All tests in parent TestCase
 
 
 class DeleteDogViewTests(PugOrUghViewTestCase):
@@ -227,6 +226,29 @@ class DeleteDogViewTests(PugOrUghViewTestCase):
         resolved_view = resolve(self.url).func
 
         self.assertEqual(resolved_view, self.target_view)
+
+    def test_confirm_deletes_dog(self):
+        before_dogs_count = Dog.objects.all().count()
+
+        self.client.post(
+            reverse(self.name, kwargs=self.kwargs),
+            {'confirm': 'DELETE'}
+        )
+
+        self.assertEqual(
+            Dog.objects.all().count(),
+            before_dogs_count - 1
+        )
     
-    
-    # TODO - class-specific tests
+    def test_cancel_does_not_delete_dog(self):
+        before_dogs_count = Dog.objects.all().count()
+
+        self.client.post(
+            reverse(self.name, kwargs=self.kwargs),
+            {'cancel': 'Cancel'}
+        )
+
+        self.assertEqual(
+            Dog.objects.all().count(),
+            before_dogs_count
+        )
