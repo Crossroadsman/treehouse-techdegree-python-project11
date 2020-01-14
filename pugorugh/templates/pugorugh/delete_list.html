@@ -1,19 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
+{% extends "base.html" %}
+{% load static %}
 
-  </head>
-  
-  <body>
+{% block title %}Delete Dog{% endblock %}
+
+{% block main_content %}
     <h1>CHOOSE A DOG TO DELETE</h1>
 
     <ol>
       {% for dog in dogs %}
         <li>
-            {{ dog.id }} {{ dog.name }}
+            {{ dog.name }}
+            <img src="/static/images/dogs/{{ dog.image_filename }}" alt="dog image" height="100">
             <a href="{% url 'delete_dog' pk=dog.id %}">DELETE</a>
         </li>
       {% endfor %}
     </ol>
-  </body>
-</html>
+{% endblock main_content %}

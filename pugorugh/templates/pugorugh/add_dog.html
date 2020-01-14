@@ -1,16 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
+{% extends "base.html" %}
 
-  </head>
-  
-  <body>
-    <h1>ADD DOG</h1>
+{% block title %}Add Dog{% endblock %}
+
+{% block main_content %}
+  <h1>ADD DOG</h1>
+  <div>
     <form method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       {{ form.as_p }}
       <input type="submit" value="Add Dog">
 
     </form>
-  </body>
-</html>
+  </div>
+{% endblock main_content %}
