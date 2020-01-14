@@ -1,7 +1,9 @@
+import os
+import tempfile
 from io import BytesIO
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from PIL import Image
 
@@ -67,7 +69,10 @@ VALID_DOG_DATA = [
 
 VALID_STATUS_LIST = ['l', 'l', 'u', 'u', 'd', 'd']
 
+TEST_DIRECTORY = tempfile.TemporaryDirectory()
 
+
+@override_settings(DOG_UPLOAD_DIR = os.path.join(TEST_DIRECTORY.name, 'images', 'dogs'))
 class PugOrUghTestCase(TestCase):
     
     # Helper Methods
