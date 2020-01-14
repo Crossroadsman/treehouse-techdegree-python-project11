@@ -1,6 +1,7 @@
 from PIL import Image
 
 from django import forms
+from django.conf import settings
 
 from .models import Dog
 from . import file_handling
@@ -51,7 +52,11 @@ class AddDogForm(forms.ModelForm):
         pk = self.get_next_pk()
 
         image_file = self.cleaned_data.get('image')
-        dog.image_filename = file_handling.process_upload(image_file, pk)
+        dog.image_filename = file_handling.process_upload(
+            image_file,
+            pk,
+            upload_dir=settings.DOG_UPLOAD_DIR
+        )
 
         if commit:
             dog.save()

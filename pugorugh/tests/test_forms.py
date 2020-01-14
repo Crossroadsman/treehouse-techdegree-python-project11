@@ -29,7 +29,6 @@ class AddDogFormTestCase(PugOrUghTestCase):
         )
 
     def test_form_creates_valid_dog(self):
-
         # create an image file
         test_image_file = self.make_image_file()
         
@@ -69,4 +68,3 @@ class AddDogFormTestCase(PugOrUghTestCase):
             getattr(dog, 'image_filename'),
             '3.jpg'
         )
-

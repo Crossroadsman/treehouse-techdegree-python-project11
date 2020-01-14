@@ -69,10 +69,13 @@ VALID_DOG_DATA = [
 
 VALID_STATUS_LIST = ['l', 'l', 'u', 'u', 'd', 'd']
 
-TEST_DIRECTORY = tempfile.TemporaryDirectory()
+TEMP_DIRECTORY = tempfile.TemporaryDirectory()
+TEST_DIRECTORY = os.path.join(TEMP_DIRECTORY.name, 'images', 'dogs')
+if not os.path.exists(TEST_DIRECTORY):
+    os.makedirs(TEST_DIRECTORY)
 
 
-@override_settings(DOG_UPLOAD_DIR = os.path.join(TEST_DIRECTORY.name, 'images', 'dogs'))
+@override_settings(DOG_UPLOAD_DIR = TEST_DIRECTORY)
 class PugOrUghTestCase(TestCase):
     
     # Helper Methods

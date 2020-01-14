@@ -37,6 +37,8 @@ def handle_uploaded_file(uploaded_file, path, name):
 # redirect them to static, since react is looking for the images in static)
 # (see: https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html)
 def process_upload(file, pk, upload_dir=settings.DOG_UPLOAD_DIR):
+    logging.debug('start of method')
+    logging.debug(f'TARGET DIRECTORY: {settings.DOG_UPLOAD_DIR}')
     """Takes `file` of type `UploadedFile` (the type of the 'files' in
     `request.FILES`) then:
     1. creates a new filename from the supplied `pk`;
@@ -54,4 +56,5 @@ def process_upload(file, pk, upload_dir=settings.DOG_UPLOAD_DIR):
     handle_uploaded_file(file, upload_dir, new_name)
 
     # 3
+    logging.debug('end of method')
     return new_name
