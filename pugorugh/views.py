@@ -73,21 +73,22 @@ class NeedMoreLoveDogRetrieveAPIView(RetrieveAPIView):
     
         # We can now get the number of likes each dog has by accessing
         # the fdog.userdog_set.count() method
-        print('---DEBUG: dogs and likes count---')
-        for dog in fdogs:
-            print(f'{dog.name}: {dog.userdog_set.count()})')
+        dog_and_likes_count = [
+            (dog.name, dog.userdog_set.count()) for dog in fdogs
+        ]
+        logging.debug(f"Dogs and Likes Count:\n{dog_and_likes_count}")
+
         # note that, e.g., Rosie who has 2 likes returns 2 and Muffin, 
         # who has no likes but a dislike returns 0
         # (if we weren't using the filtered prefetch then the count would
         # return 1 for Muffin)
-
         dog_list = sorted(
             [(dog, dog.userdog_set.count()) for dog in fdogs],
             key=lambda x: x[1]
         )
 
         unloved = []
-        for i, dog in enumerate(dog_list):
+        for dog in dog_list:
             if dog[1] > dog_list[0][1]:
                 break
             unloved.append(dog[0])

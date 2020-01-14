@@ -79,11 +79,6 @@ class ViewsWithUserTestCase(PugOrUghTestCase):
             user_data,
             format='json'
         )
-        # print("---- helper function: get_token()'s response ----")
-        # print(response)
-        # print(response.status_code)
-        # print(response.data)
-        # print("---- end helper function ----")
 
         return response.data['token']
     
@@ -252,7 +247,70 @@ class DogRetrieveUpdateAPIViewTests(ViewsWithUserTestCase):
         self.assertEqual(old_status, expected_old_status)
         with self.assertRaises(UserDog.DoesNotExist):
             userdog = UserDog.objects.get(dog=pk)
+
+
+class RandomDogRetrieveAPIViewTests(ViewsWithUserTestCase):
+
+    # Setup and Teardown
+    # ------------------
+    def setUp(self):
+        # Need ((s) from super):
+        # - (s) a user (with token for authentication),
+        # - (s) a userprefs, 
+        # - at least six dogs to enable
+        # - two userdogs for each of 'l', 'd', 'u'
+        super().setUp()
+
+        self.create_some_dogs(VALID_DOG_DATA)
+        self.create_some_userdogs(self.user, VALID_STATUS_LIST)
         
+        self.client = self.authenticate_user()
+
+    # Tests
+    # -----
+    def test_view_retrieves_a_dog(self):
+        dog_names = [x['name'] for x in VALID_DOG_DATA]
+        uri = '/api/dog/random/'
+        
+        response = self.client.get(uri)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(response.data['name'], dog_names)
+
+
+class NeedMoreLoveDogRetrieveAPIView(ViewsWithUserTestCase):
+
+    # Setup and Teardown
+    # ------------------
+    def setUp(self):
+        # Need ((s) from super):
+        # - (s) a user (with token for authentication),
+        # - (s) a userprefs, 
+        # - at least six dogs to enable
+        # - two userdogs for each of 'l', 'd', 'u'
+        super().setUp()
+
+        self.create_some_dogs(VALID_DOG_DATA)
+        self.create_some_userdogs(self.user, VALID_STATUS_LIST)
+        
+        self.client = self.authenticate_user()
+
+    # Tests
+    # -----
+    def test_view_retrieves_an_unloved_dog(self):
+        dog_names = [
+            'frankie',
+            'ted',
+            'molly',
+            'dougie'
+        ]
+        uri = '/api/dog/random/'
+        
+        response = self.client.get(uri)
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(response.data['name'], dog_names)
+
 
 class UserPrefRetrieveAPIViewTests(ViewsWithUserTestCase):
 
