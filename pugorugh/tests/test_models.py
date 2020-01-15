@@ -106,7 +106,7 @@ class UserDogModelTests(ModelTestCase):
 
     def test_str_correctly_represents_model(self):
         expected_result = "{} x {}".format(self.test_user, self.test_dog)
-        
+
         self.assertEqual(
             str(self.test_userdog),
             expected_result
@@ -141,7 +141,7 @@ class UserPrefModelTests(ModelTestCase):
             f'gender: {self.test_userpref_data["gender"]}, '
             f'size: {self.test_userpref_data["size"]}'
         )
-        
+
         self.assertEqual(
             str(self.test_userpref),
             expected_result

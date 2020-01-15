@@ -11,7 +11,7 @@ class UserPrefSerializerTestCase(TestCase):
 
     def setUp(self):
         self.test_serializer = UserPrefSerializer()
-    
+
     def test_invalid_age_character_triggers_validationerror(self):
         with self.assertRaises(serializers.ValidationError):
             self.test_serializer.validate_age('x')

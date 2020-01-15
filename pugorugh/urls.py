@@ -32,24 +32,42 @@ urlpatterns = [
     #   This route seems to be a clone of the route in the base urls.py
     re_path(r'^api/user/login/$', obtain_auth_token, name="login-user"),
     #   Register user (available as a web view)
-    re_path(r'^api/user/$', views.UserRegisterView.as_view(), name='register-user'),
+    re_path(r'^api/user/$',
+            views.UserRegisterView.as_view(),
+            name='register-user'),
 
     # Application
-    re_path(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
-    re_path(r'^favicon\.ico$', RedirectView.as_view(url='/static/icons/favicon.ico', permanent=True)),
+    re_path(r'^$',
+            TemplateView.as_view(template_name='index.html'),
+            name='index'),
+    re_path(r'^favicon\.ico$',
+            RedirectView.as_view(url='/static/icons/favicon.ico',
+                                 permanent=True)),
 
     # API
-    re_path(r'^api/dog/(?P<pk>[-\d]+)/(?P<status>\w+)/next/$', views.DogRetrieveUpdateAPIView.as_view(), name="next-dog"),
-    re_path(r'^api/dog/(?P<pk>[-\d]+)/(?P<status>\w+)/$', views.DogRetrieveUpdateAPIView.as_view(), name="set-status"),
-    re_path(r'^api/user/preferences/$', views.UserPrefRetrieveAPIView.as_view(), name="set-preferences"),
+    re_path(r'^api/dog/(?P<pk>[-\d]+)/(?P<status>\w+)/next/$',
+            views.DogRetrieveUpdateAPIView.as_view(),
+            name="next-dog"),
+    re_path(r'^api/dog/(?P<pk>[-\d]+)/(?P<status>\w+)/$',
+            views.DogRetrieveUpdateAPIView.as_view(),
+            name="set-status"),
+    re_path(r'^api/user/preferences/$',
+            views.UserPrefRetrieveAPIView.as_view(),
+            name="set-preferences"),
 
-    re_path(r'^api/dog/random/$', views.RandomDogRetrieveAPIView.as_view(), name="random-dog"),
-    re_path(r'^api/dog/needs-love/$', views.NeedMoreLoveDogRetrieveAPIView.as_view(), name="needs-love-dog"),
+    re_path(r'^api/dog/random/$',
+            views.RandomDogRetrieveAPIView.as_view(),
+            name="random-dog"),
+    re_path(r'^api/dog/needs-love/$',
+            views.NeedMoreLoveDogRetrieveAPIView.as_view(),
+            name="needs-love-dog"),
 
     # Additional App Views
     re_path(r'dog/add/$', views.add_dog, name='add_dog'),
     re_path(r'dog/delete/$', views.delete_list, name='delete_list'),
-    re_path(r'dog/(?P<pk>[-\d]+)/delete/$', views.delete_dog, name='delete_dog'),
+    re_path(r'dog/(?P<pk>[-\d]+)/delete/$',
+            views.delete_dog,
+            name='delete_dog'),
 ]
 
 # Apply Format Suffixes

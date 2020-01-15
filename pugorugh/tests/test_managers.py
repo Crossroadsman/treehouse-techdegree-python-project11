@@ -29,7 +29,7 @@ class DogManagerTests(InRangeAssertMixin, PugOrUghTestCase):
     # ------------------
     def setUp(self):
         # super().setUp()
-        
+
         # Need:
         # - User (with userprefs)
         # - Some dogs
@@ -54,24 +54,24 @@ class DogManagerTests(InRangeAssertMixin, PugOrUghTestCase):
             'dog__name',
             flat=True
         )
-        
+
         self.assertEqual(list(dogs), list(userdogs))
 
     def test_with_genderprefs_returns_dogs_matching_gender_prefs(self):
         dogs = Dog.objects.with_genderprefs(self.user)
-        
+
         for dog in dogs:
             self.assertIn(dog.gender, self.user.userpref.gender)
 
     def test_with_ageprefs_returns_dogs_matching_age_prefs(self):
         self.user.userpref.age = "a"
         self.user.save()
-        
+
         min_age = AGE_MAPPING[1][1]  # 18
         max_age = AGE_MAPPING[2][1]  # 84
 
         dogs = Dog.objects.with_ageprefs(self.user)
-        
+
         for dog in dogs:
             self.assertInRange(dog.age, min_age, max_age)
 
@@ -85,10 +85,10 @@ class DogManagerTests(InRangeAssertMixin, PugOrUghTestCase):
             self.assertIn(dog.size, self.user.userpref.size)
 
     def test_with_prefs_returns_dogs_matching_all_prefs(self):
-        self.user.userpref.size = 's,l'  # lucy/rosie/frankie/ted/dougie
-        self.user.userpref.age = 'a'  # lucy/rosie/ted/molly
-        self.user.userpref.gender = 'f' # lucy/rosie/frankie/molly
-        
+        self.user.userpref.size = 's,l'   # lucy/rosie/frankie/ted/dougie
+        self.user.userpref.age = 'a'   # lucy/rosie/ted/molly
+        self.user.userpref.gender = 'f'  # lucy/rosie/frankie/molly
+
         expected_dogs = ['lucy', 'rosie']
 
         dogs = Dog.objects.with_prefs(self.user).values_list('name', flat=True)

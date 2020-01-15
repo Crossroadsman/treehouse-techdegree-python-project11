@@ -9,7 +9,7 @@ from rest_framework.authtoken import views
 urlpatterns = [
     # Django
     path('admin/', admin.site.urls),
-    
+
     # Rest Framework
     #   Browsable API - Login/Logout views
     #   `api-auth/` itself is not browsable, but this provides `.../login/`
@@ -21,5 +21,5 @@ urlpatterns = [
     re_path(r'^api-token-auth/', views.obtain_auth_token),
 
     # Pug Or Ugh
-    re_path(r'^', include('pugorugh.urls')),    
+    re_path(r'^', include('pugorugh.urls')),
 ]

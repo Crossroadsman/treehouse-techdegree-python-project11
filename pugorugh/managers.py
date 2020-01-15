@@ -7,8 +7,10 @@ AGE_MAPPING = [
     ('b', 4),  # new puppy stage
     ('y', 18),  # remainder of puppy stage
     ('a', 84),  # up to seven years
-    ('s', sys.maxsize),  # up to 700 quadrillion years (fingers-crossed for advancements in dog longevity)
+    ('s', sys.maxsize),  # up to 700 quadrillion years (fingers-crossed
+                         # for advancements in dog longevity)
 ]
+
 
 class DogQuerySet(models.QuerySet):
 
@@ -19,7 +21,7 @@ class DogQuerySet(models.QuerySet):
         return self.filter(gender__in=genders)
 
     def with_ages(self, low, high):
-        """Takes a pair of ages (months) and returns all dogs with an age in 
+        """Takes a pair of ages (months) and returns all dogs with an age in
         the range (inclusive)
         """
         return self.filter(
@@ -30,12 +32,12 @@ class DogQuerySet(models.QuerySet):
     def with_age_class(self, age_class):
         """Takes an age class ('b', 'y', 'a', 's') and returns all the dogs
         whose age is within the class.
-        
+
         Since the age groups are fuzzy (both in terms of definition AND in
         precision (e.g., a 4 month old dog might be 3.5 months old if owner
-        rounds up, or 4.49 months old if owner rounds down)), the transition 
-        values return true for both age groups. For example, a person who 
-        likes a 'baby' dog is expected to like a 4 month old dog. But a 
+        rounds up, or 4.49 months old if owner rounds down)), the transition
+        values return true for both age groups. For example, a person who
+        likes a 'baby' dog is expected to like a 4 month old dog. But a
         person who likes a 'young' dog probably also likes a 4 month old dog.
         Thus a dog of 4 months will be classified as both baby AND young.
         """
@@ -47,7 +49,7 @@ class DogQuerySet(models.QuerySet):
                     low = AGE_MAPPING[i - 1][1]
                 high = tup[1]
                 return self.with_ages(low, high)
-        
+
         # value not in age mapping, return empty
         return self.none()
 
@@ -75,7 +77,7 @@ class DogQuerySet(models.QuerySet):
 
         # first dog is first pk with corresponding status
         #
-        # Reminder: when querying through a reverseFK or a MTM, the 
+        # Reminder: when querying through a reverseFK or a MTM, the
         # behaviour of chained filters can be subtly different.
         # Imagine there is a dog called 'Spot'. Current_user has marked
         # Spot as 'l'. Someother_user has marked Spot as 'd'.
@@ -91,7 +93,7 @@ class DogQuerySet(models.QuerySet):
         #
         # Second:
         # dogs_reviewed_by_cu_and_disliked_by_someone = Dog.objects.filter(
-        #     userdog__user=current_user                
+        #     userdog__user=current_user
         # ).filter(
         #     userdog__status='d'
         # )
@@ -114,7 +116,7 @@ class DogQuerySet(models.QuerySet):
         if age_prefs == set([tup[0] for tup in AGE_MAPPING]):
             # all ages are in preferences, no need to refine queryset
             return self.all()
-        else: # Use Q objects to OR together the preferences instead of Union
+        else:  # Use Q objects to OR together the preferences instead of Union
             q_objects = Q()
             for age_class in age_prefs:
                 dogs_with_age = self.with_age_class(age_class)
@@ -133,9 +135,9 @@ class DogQuerySet(models.QuerySet):
     def with_sizeprefs(self, user):
         """Returns all the dogs that match the user's size preferences"""
         size_prefs = user.userpref.size.split(",")
-        if ("s" in size_prefs and 
-                "m" in size_prefs and 
-                "l" in size_prefs and 
+        if ("s" in size_prefs and
+                "m" in size_prefs and
+                "l" in size_prefs and
                 "xl" in size_prefs):
             # no need to refine queryset
             return self.all()
@@ -147,9 +149,9 @@ class DogQuerySet(models.QuerySet):
                 q_objects |= Q(id__in=dogs_with_size)
             return self.filter(q_objects)
 
-    def with_prefs(self, user):
+    def with_prefs(self, u):
         """Returns all the dogs that match the user's preferences"""
-        return self.with_ageprefs(user).with_genderprefs(user).with_sizeprefs(user)
+        return self.with_ageprefs(u).with_genderprefs(u).with_sizeprefs(u)
 
 
 class DogManager(models.Manager):

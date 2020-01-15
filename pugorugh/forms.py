@@ -10,13 +10,14 @@ from . import file_handling
 class AddDogForm(forms.ModelForm):
 
     # We are explicitly instantiating the image form field (so that we can
-    # get an image file from the user then turn it into a charfield to 
+    # get an image file from the user then turn it into a charfield to
     # maintain compatibility with the existing app).
     # Because we are defining it here, we won't get the benefit of Django's
     # automatic model field validation, so we need to manually specify the
     # validator
     # see:
-    # https://docs.djangoproject.com/en/2.2/topics/forms/modelforms/#overriding-the-default-fields
+    # https://docs.djangoproject.com/en/2.2/topics/forms/modelforms/
+    # #overriding-the-default-fields
     image = forms.ImageField(
         max_length=255
     )
@@ -25,7 +26,7 @@ class AddDogForm(forms.ModelForm):
         model = Dog
         fields = (
             'name',
-            # 'image_filename',  # Need to override this to create the image file
+            # 'image_filename',  # Override this to create the image file
             'age',
             'gender',
             'size',
@@ -37,11 +38,12 @@ class AddDogForm(forms.ModelForm):
         )
 
     # The ModelForm's save() method creates and saves the database object.
-    # Therefore we can create the new dog model (with a null value for the 
-    # filename), get its pk, then call the file handling code to produce a 
+    # Therefore we can create the new dog model (with a null value for the
+    # filename), get its pk, then call the file handling code to produce a
     # filename, then put that in the model and save it.
-    # see: 
-    # https://docs.djangoproject.com/en/2.2/topics/forms/modelforms/#the-save-method
+    # see:
+    # https://docs.djangoproject.com/en/2.2/topics/forms/modelforms/
+    # #the-save-method
     def save(self, commit=True):
         self.image_filename = ""  # image_filename is a required field
         dog = super().save(commit=False)
@@ -70,4 +72,3 @@ class AddDogForm(forms.ModelForm):
             return Dog.objects.last().pk + 1
         else:
             return 1
-

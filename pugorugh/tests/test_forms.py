@@ -20,7 +20,7 @@ class AddDogFormTestCase(PugOrUghTestCase):
     def test_get_next_pk_correctly_returns_next_pk(self):
 
         dogs = Dog.objects.all()
-        
+
         test_form = AddDogForm()
 
         self.assertEqual(
@@ -31,11 +31,11 @@ class AddDogFormTestCase(PugOrUghTestCase):
     def test_form_creates_valid_dog(self):
         # create an image file
         test_image_file = self.make_image_file()
-        
+
         # seek to beginning of file
         test_image_file.seek(0)
 
-        test_data =  {
+        test_data = {
             'name': 'dougie',
             'age': 13,
             'gender': 'm',
@@ -43,7 +43,7 @@ class AddDogFormTestCase(PugOrUghTestCase):
             'breed': 'labrador retriever'
         }
         test_files = {'image': test_image_file}
-        
+
         test_form = AddDogForm(test_data, test_files)
         test_form.is_valid()
         logging.debug(test_form.errors.as_data())

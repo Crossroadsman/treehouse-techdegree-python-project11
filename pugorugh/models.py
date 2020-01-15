@@ -1,7 +1,8 @@
 import sys
 from django.conf import settings
 from django.db.models import Model, CASCADE
-from django.db.models import (CharField, PositiveIntegerField, ForeignKey, OneToOneField, BooleanField)
+from django.db.models import (CharField, PositiveIntegerField,
+                              ForeignKey, OneToOneField, BooleanField)
 
 from .managers import DogManager
 
@@ -50,13 +51,13 @@ class Dog(Model):
     objects = DogManager()
 
     class Meta:
-        # Make explicit our intent that, unless otherwise specified in a 
+        # Make explicit our intent that, unless otherwise specified in a
         # query, we want to get objects in the order they were created
-        ordering = ['pk',]
+        ordering = ['pk', ]
 
     def __str__(self):
         return self.name
-    
+
 
 class UserDog(Model):
 
@@ -87,4 +88,4 @@ class UserPref(Model):
     size = CharField(max_length=8, default="s,m,l,xl")
 
     def __str__(self):
-        return f'{self.user} age: {self.age}, gender: {self.gender}, size: {self.size}'
+        return f'{self.user}, {self.age}, {self.gender}, {self.size}'

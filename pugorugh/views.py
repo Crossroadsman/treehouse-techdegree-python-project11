@@ -26,10 +26,10 @@ from .forms import AddDogForm
 # It takes unordered content and uses 'content negotiation' to determine
 # the correct type to return to the client.
 class UserRegisterView(CreateAPIView):
-    
+
     # Override the restrictive permissions specified in settings.py
     permission_classes = (permissions.AllowAny,)
-    
+
     model = get_user_model()
     serializer_class = serializers.UserSerializer
 
@@ -60,7 +60,7 @@ class NeedMoreLoveDogRetrieveAPIView(RetrieveAPIView):
     def get_object(self):
         # We want to get all the dogs and the count of their likes in
         # UserDog.
-    
+
         # First, create a filtered queryset of UserDogs that Prefetch
         # is going to use:
         likes = models.UserDog.objects.filter(status='l')
@@ -71,7 +71,7 @@ class NeedMoreLoveDogRetrieveAPIView(RetrieveAPIView):
         fdogs = models.Dog.objects.prefetch_related(
             Prefetch('userdog_set', queryset=likes)
         )
-    
+
         # We can now get the number of likes each dog has by accessing
         # the fdog.userdog_set.count() method
         dog_and_likes_count = [
@@ -79,7 +79,7 @@ class NeedMoreLoveDogRetrieveAPIView(RetrieveAPIView):
         ]
         logging.debug(f"Dogs and Likes Count:\n{dog_and_likes_count}")
 
-        # note that, e.g., Rosie who has 2 likes returns 2 and Muffin, 
+        # note that, e.g., Rosie who has 2 likes returns 2 and Muffin,
         # who has no likes but a dislike returns 0
         # (if we weren't using the filtered prefetch then the count would
         # return 1 for Muffin)
@@ -125,26 +125,11 @@ class DogRetrieveUpdateAPIView(
             pref_dogs = status_dogs.with_prefs(current_user)
         else:  # 'l' or 'd'
             # Note, we're ignoring userprefs because the user has explicitly
-            # expressed a like/dislike for this particular dog. General 
+            # expressed a like/dislike for this particular dog. General
             # preferences shouldn't override this expressed status
             pref_dogs = status_dogs
 
-
         first_dog_with_status = pref_dogs.first()
-
-        # print("\n==== DEBUG DogRetrieveUpdateAPIView.get_first_dog_with_status ====")
-        # print(f'status: {status}')
-        # print(f'current_user: {current_user}')
-        # print(f'userpref: {current_user.userpref}')
-
-        # print(f'status_dogs: {status_dogs}')
-        # for dog in status_dogs:
-        #     print(f'{dog.name}: {dog.pk}')
-        # print(f'pref_dogs: {pref_dogs}')
-        # for dog in pref_dogs:
-        #     print(f'{dog.name}: {dog.pk}')
-        # print(f'first with status: {first_dog_with_status}')
-        # print("==== END DEBUG DogRetrieveUpdateAPIView.get_first_dog_with_status ====\n")
 
         return first_dog_with_status
 
@@ -167,7 +152,7 @@ class DogRetrieveUpdateAPIView(
             # first dog is next in pk with same userdog status
             #
             # Note, we're ignoring userprefs because the user has explicitly
-            # expressed a like/dislike for this particular dog. General 
+            # expressed a like/dislike for this particular dog. General
             # preferences shouldn't override this expressed status
             pref_dogs = status_dogs
 
@@ -179,14 +164,6 @@ class DogRetrieveUpdateAPIView(
         if next_pref_dog is None:
             next_pref_dog = pref_dogs.first()
 
-        # print("\n==== DEBUG DogRetrieveUpdateAPIView.get_next_dog_with_status ====")
-        # print(f'status: {status}')
-        # print(f'current_user: {current_user}')
-        # print(f'status_dogs: {status_dogs}')
-        # print(f'pref_dogs: {pref_dogs}')
-        # print(f'next with status: {next_pref_dog}')
-        # print("==== END DEBUG DogRetrieveUpdateAPIView.get_next_dog_with_status ====\n")
-
         return next_pref_dog
 
     # APIView Methods
@@ -194,30 +171,18 @@ class DogRetrieveUpdateAPIView(
     def get_object(self):
         current_dog_id = int(self.kwargs.get('pk'))
 
-        # print("\n==== DEBUG DogRetrieveUpdateAPIView.get_object ====")
-        # print(f'current_dog_id: {current_dog_id}')
-        # print("==== END DEBUG DogRetrieveUpdateAPIView.get_object ====\n")
-
         # if pk is -1 (switching categories)
         # get the first dog in the category (wrapping around if necessary)
         if current_dog_id == -1:
             dog = self.get_first_dog_with_status()
-
-            # print("--- DEBUG get_object: entering pk==-1 branch ----")
-            # print(f'first_dog: {dog}')
-            # print("--- END DEBUG get_object: entering pk==-1 branch ----")
-
 
         # pk is not -1 (it's a real pk)
         # get the first dog with the matching status with a pk > current_dog_id
         # (wrap around if necessary).
         else:
             dog = self.get_next_dog_with_status()
-            # print("--- DEBUG get_object: entering pk!=-1 branch ----")
-            # print(f'next_dog: {dog}')
-            # print("--- END DEBUG get_object: entering pk!=-1 branch ----")
 
-        #If no dogs at all with status, return 404
+        # If no dogs at all with status, return 404
         if dog is None:
             raise NotFound(detail="Error 404, page not found", code=404)
         else:
@@ -247,7 +212,7 @@ class DogRetrieveUpdateAPIView(
                     dog=dog,
                     status=status
                 )
-            
+
         if status == 'u':
             userdog = dog.userdog_set.filter(user=user).first()
             if userdog:
@@ -285,7 +250,7 @@ class UserPrefRetrieveAPIView(
     # -------------
     def update(self, request, *args, **kwargs):
         userpref = self.get_object()
-        
+
         serializer = self.get_serializer(userpref, data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)  # just calls serializer.save()
@@ -296,7 +261,7 @@ class UserPrefRetrieveAPIView(
         return self.update(request, *args, **kwargs)
 
     def perform_create(self, request, *args, **kwargs):
-        
+
         # serializer is guaranteed to be passed in as a kwarg
         serializer.save(user=self.request.user)
 
@@ -314,10 +279,10 @@ def add_dog(request):
         if form.is_valid():
             form.save()
             return redirect(reverse('index'))
-    
+
     else:  # GET
         form = AddDogForm()
-    
+
     template = 'pugorugh/add_dog.html'
     context = {'form': form}
     return render(request, template, context)
@@ -338,7 +303,7 @@ def delete_dog(request, pk):
         if 'confirm' in request.POST:  # delete the dog
             logging.debug(f"deleting {dog.name} ({dog.pk})...")
             dog.delete()
-            logging.debug(f"Deleted dog. Remaining dogs: {models.Dog.objects.all()}")
+            logging.debug(f"Deleted. Remaining: {models.Dog.objects.all()}")
             return redirect(reverse('index'))
 
         else:  # do not delete the dog, go back to previous screen

@@ -73,7 +73,11 @@ class ProcessUploadTests(FileHandlingTests):
         test_pk = '02'
         expected_name = rename(self.test_uploadedfile.name, test_pk)
 
-        result = process_upload(self.test_uploadedfile, test_pk, self.upload_dir.name)
+        result = process_upload(
+            self.test_uploadedfile,
+            test_pk,
+            self.upload_dir.name
+        )
 
         self.assertEqual(
             result,

@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
 
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
@@ -22,7 +21,7 @@ class ViewsWithUserTestCase(PugOrUghTestCase):
     def setUp(self):
         # Need:
         # - a user (with token for authentication),
-        # - a userprefs, 
+        # - a userprefs,
         user = self.create_valid_user()
         self.create_valid_userprefs(user)
 
@@ -30,20 +29,20 @@ class ViewsWithUserTestCase(PugOrUghTestCase):
             'username': 'some_test_user',
             'password': 'some_test_password'
         }
-        # This user's userprefs must, at a minimum, include the 
+        # This user's userprefs must, at a minimum, include the
         # characteristics of the dogs marked as 'undecided'
         userprefs_data = {
             'age': 'y,a,s',
             'gender': 'm,f',
             'size': 's,m,l,xl'
         }
-        
+
         user2 = self.create_valid_user(**user_data)
         self.create_valid_userprefs(user2, **userprefs_data)
 
         self.user = user2
         self.token = self.get_token(**user_data)
-   
+
     # Helper Methods
     # --------------
     def create_valid_user(self, **kwargs):
@@ -81,7 +80,7 @@ class ViewsWithUserTestCase(PugOrUghTestCase):
         )
 
         return response.data['token']
-    
+
     def authenticate_user(self):
         """Ensure that all requests will have appropriate `Authorization: `
         headers
@@ -105,7 +104,7 @@ class ViewsWithUserTestCase(PugOrUghTestCase):
 
         userprefs.save()
         return userprefs
-    
+
     def debug_print_response_details(self, response):
         print('==== DEBUG response details ====')
         print('---- full response ----')
@@ -124,14 +123,14 @@ class DogRetrieveUpdateAPIViewTests(ViewsWithUserTestCase):
     def setUp(self):
         # Need ((s) from super):
         # - (s) a user (with token for authentication),
-        # - (s) a userprefs, 
+        # - (s) a userprefs,
         # - at least six dogs to enable
         # - two userdogs for each of 'l', 'd', 'u'
         super().setUp()
 
         self.create_some_dogs(VALID_DOG_DATA)
         self.create_some_userdogs(self.user, VALID_STATUS_LIST)
-        
+
         self.client = self.authenticate_user()
 
     # Tests
@@ -147,7 +146,7 @@ class DogRetrieveUpdateAPIViewTests(ViewsWithUserTestCase):
         'l' or 'd' means: I want to see some dogs that I already know I
         like or dislike, even if they don't meet my general preferences.
         """
-       
+
         for key, value in {
             'liked': 'lucy',  # 2nd is Rosie
             'undecided': 'frankie',  # 2nd is Ted
@@ -160,7 +159,6 @@ class DogRetrieveUpdateAPIViewTests(ViewsWithUserTestCase):
 
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data['name'], value)
-        
 
     def test_getting_dog_pk_positive_retrieves_next_dog_with_status(self):
         """similar to previous test except we want the next (with wraparound)
@@ -195,7 +193,7 @@ class DogRetrieveUpdateAPIViewTests(ViewsWithUserTestCase):
             userdog.status = 'u'
             userdog.save()
 
-        # Note the actual PK doesn't matter (as long as it is a postive 
+        # Note the actual PK doesn't matter (as long as it is a postive
         # integer) when asking for the next dog.
         uri = '/api/dog/1/liked/next/'
 
@@ -215,10 +213,9 @@ class DogRetrieveUpdateAPIViewTests(ViewsWithUserTestCase):
 
         expected_new_status = 'd'
         userdog = UserDog.objects.get(dog=pk)
-        
+
         self.assertEqual(old_status, expected_old_status)
         self.assertEqual(userdog.status, expected_new_status)
-        
 
     def test_putting_status_creates_a_new_userdog_status(self):
         """ undecided --> [liked | disliked] """
@@ -231,7 +228,7 @@ class DogRetrieveUpdateAPIViewTests(ViewsWithUserTestCase):
 
         expected_new_status = 'l'
         userdog = UserDog.objects.get(dog=pk)
-        
+
         self.assertEqual(userdog.status, expected_new_status)
 
     def test_putting_status_deletes_an_existing_explicit_userdog_status(self):
@@ -256,14 +253,14 @@ class RandomDogRetrieveAPIViewTests(ViewsWithUserTestCase):
     def setUp(self):
         # Need ((s) from super):
         # - (s) a user (with token for authentication),
-        # - (s) a userprefs, 
+        # - (s) a userprefs,
         # - at least six dogs to enable
         # - two userdogs for each of 'l', 'd', 'u'
         super().setUp()
 
         self.create_some_dogs(VALID_DOG_DATA)
         self.create_some_userdogs(self.user, VALID_STATUS_LIST)
-        
+
         self.client = self.authenticate_user()
 
     # Tests
@@ -271,9 +268,9 @@ class RandomDogRetrieveAPIViewTests(ViewsWithUserTestCase):
     def test_view_retrieves_a_dog(self):
         dog_names = [x['name'] for x in VALID_DOG_DATA]
         uri = '/api/dog/random/'
-        
+
         response = self.client.get(uri)
-        
+
         self.assertEqual(response.status_code, 200)
         self.assertIn(response.data['name'], dog_names)
 
@@ -285,14 +282,14 @@ class NeedMoreLoveDogRetrieveAPIView(ViewsWithUserTestCase):
     def setUp(self):
         # Need ((s) from super):
         # - (s) a user (with token for authentication),
-        # - (s) a userprefs, 
+        # - (s) a userprefs,
         # - at least six dogs to enable
         # - two userdogs for each of 'l', 'd', 'u'
         super().setUp()
 
         self.create_some_dogs(VALID_DOG_DATA)
         self.create_some_userdogs(self.user, VALID_STATUS_LIST)
-        
+
         self.client = self.authenticate_user()
 
     # Tests
@@ -305,9 +302,9 @@ class NeedMoreLoveDogRetrieveAPIView(ViewsWithUserTestCase):
             'dougie'
         ]
         uri = '/api/dog/random/'
-        
+
         response = self.client.get(uri)
-        
+
         self.assertEqual(response.status_code, 200)
         self.assertIn(response.data['name'], dog_names)
 
@@ -319,7 +316,7 @@ class UserPrefRetrieveAPIViewTests(ViewsWithUserTestCase):
     def setUp(self):
         # Need ((s) from super):
         # - (s) a user (with token for authentication),
-        # - (s) a userprefs, 
+        # - (s) a userprefs,
         super().setUp()
         self.client = self.authenticate_user()
 
@@ -336,7 +333,6 @@ class UserPrefRetrieveAPIViewTests(ViewsWithUserTestCase):
                 getattr(self.user.userpref, field),
                 response.data[field]
             )
-
 
     # put (update) the userpref values for a user
     def test_put_updates_userprefs_for_current_user(self):

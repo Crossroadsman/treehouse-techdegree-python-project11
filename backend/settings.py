@@ -15,9 +15,10 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 #
 # - add the `users` app (passing the config model instead of the whole app)
 #   (for an explanation of this newer config model approach, see:
-#    https://stackoverflow.com/questions/34377237/confused-a-bit-about-django-installed-apps-naming-convention
+#    https://stackoverflow.com/questions/34377237/
+#    confused-a-bit-about-django-installed-apps-naming-convention
 #   )
-# - add the `AUTH_USER_MODEL` setting to tell Django to use our model instead 
+# - add the `AUTH_USER_MODEL` setting to tell Django to use our model instead
 #   of `User`
 #
 # Details of 8 from Custom User Model Implementation
@@ -164,10 +165,8 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        ### TODO: REMOVE BELOW ###
-        # (note app registration page will fail CSRF if SessionAuthentication
-        # is allowed)
-        #'rest_framework.authentication.SessionAuthentication',
-        ### TODO: REMOVE ABOVE ###
+        # (note app registration page will fail CSRF if
+        # SessionAuthentication is allowed)
+        # 'rest_framework.authentication.SessionAuthentication',
     )
 }

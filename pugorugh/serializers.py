@@ -21,7 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
     class Meta:
-        
+
         fields = ('username', 'password')
         model = get_user_model()
 
@@ -54,7 +54,9 @@ class DogSerializer(serializers.ModelSerializer):
 # .create or .update are called
 #
 # You can also pass context info to the serializer on instantiation:
-# serializer = serializers.UserPrefSerializer(data=request_data, context={'user': user})
+# serializer = serializers.UserPrefSerializer(
+#     data=request_data, context={'user': user}
+# )
 class UserPrefSerializer(serializers.ModelSerializer):
 
     # Custom Field-Level Validation
@@ -75,7 +77,7 @@ class UserPrefSerializer(serializers.ModelSerializer):
         gender_components = value.split(",")
         for gender in gender_components:
             if gender not in valid_genders:
-                raise serializers.ValidationError("Invalid character in genders")
+                raise serializers.ValidationError("Invalid char. in genders")
         gender_set = set(gender_components)
         if len(gender_components) != len(gender_set):
             raise serializers.ValidationError("Repeated character in genders")
@@ -93,16 +95,19 @@ class UserPrefSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        # see https://www.django-rest-framework.org/api-guide/validators/#advanced-field-defaults
-        # "request must have been provided as part of the context dictionary when
-        # instantiating the serializer"
+        # see https://www.django-rest-framework.org/api-guide/validators/
+        # #advanced-field-defaults
+        # "request must have been provided as part of the context dictionary
+        # when instantiating the serializer"
         # pass user into save -> it comes through as an element in
         # validated_data
         return models.UserPref.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
-        instance.user = instance.user  # a user can't change another user's
-                                       # user association
+
+        # a user can't change another user's user association
+        instance.user = instance.user
+
         instance.age = validated_data.get('age', instance.age)
         instance.gender = validated_data.get('gender', instance.gender)
         instance.size = validated_data.get('size', instance.size)

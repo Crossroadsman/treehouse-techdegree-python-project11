@@ -75,9 +75,9 @@ if not os.path.exists(TEST_DIRECTORY):
     os.makedirs(TEST_DIRECTORY)
 
 
-@override_settings(DOG_UPLOAD_DIR = TEST_DIRECTORY)
+@override_settings(DOG_UPLOAD_DIR=TEST_DIRECTORY)
 class PugOrUghTestCase(TestCase):
-    
+
     # Helper Methods
     # --------------
     def create_valid_userprefs(self, user, **kwargs):
@@ -130,7 +130,7 @@ class PugOrUghTestCase(TestCase):
         """Creates an in-memory byte stream containing image data
         then returns it.
         """
-        
+
         # Create the in-memory binary stream object
         image_data = BytesIO()
 

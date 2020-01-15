@@ -43,7 +43,6 @@ class PugOrUghViewTestCase(PugOrUghTestCase):
         self.target_view = None
 
         self.client = Client()
-    
 
     # Test Methods
     # ------------
@@ -75,7 +74,7 @@ class PugOrUghViewTestCase(PugOrUghTestCase):
 
 
 class AddDogViewTests(PugOrUghViewTestCase):
-    
+
     # Setup and teardown
     # ------------------
     def setUp(self):
@@ -101,7 +100,7 @@ class AddDogViewTests(PugOrUghViewTestCase):
     # Test Methods
     # ------------
     def test_valid_POST_creates_dog(self):
-        
+
         before_count = Dog.objects.all().count()
 
         self.client.post(
@@ -111,12 +110,12 @@ class AddDogViewTests(PugOrUghViewTestCase):
 
         dogs = Dog.objects.all()
         dog = dogs.last()
-        
+
         self.assertEqual(dogs.count(), before_count + 1)
         self.assertEqual(dog.name, self.valid_dog_data['name'])
 
     def test_valid_POST_redirects_to_index(self):
-        
+
         response = self.client.post(
             reverse(self.name),
             self.valid_dog_data,
@@ -148,14 +147,14 @@ class AddDogViewTests(PugOrUghViewTestCase):
             reverse(self.name),
             {**invalid_post_data, 'image': self.image_file}
         )
-        
-        logging.debug(f"POST RESPONSE:\n{response.status_code}\n{response.content.decode()}\nEND POST RESPONSE")
+
+        logging.debug(f"{response.status_code}\n{response.content.decode()}")
 
         self.assertEqual(
             Dog.objects.all().count(),
             0
         )
-    
+
     # renders view on invalid POST
     def test_invalid_POST_renders_correct_view(self):
         # no `name`
@@ -171,13 +170,13 @@ class AddDogViewTests(PugOrUghViewTestCase):
         )
 
         self.assertTemplateUsed(response, self.template)
-    
+
     # renders view on GET
     # (included in parent TestCase)
 
 
 class DeleteListViewTests(PugOrUghViewTestCase):
-    
+
     # Setup and teardown
     # ------------------
     def setUp(self):
@@ -195,12 +194,12 @@ class DeleteListViewTests(PugOrUghViewTestCase):
 
     # Test Methods
     # ------------
-    
+
     # All tests in parent TestCase
 
 
 class DeleteDogViewTests(PugOrUghViewTestCase):
-    
+
     # Setup and teardown
     # ------------------
     def setUp(self):
@@ -222,7 +221,7 @@ class DeleteDogViewTests(PugOrUghViewTestCase):
     def test_url_resolves_to_correct_view(self):
         """Ensure that expected URLs resolve to their associated views"""
         self.url = self.url.replace('<pk>', self.kwargs['pk'])
-        
+
         resolved_view = resolve(self.url).func
 
         self.assertEqual(resolved_view, self.target_view)
@@ -239,7 +238,7 @@ class DeleteDogViewTests(PugOrUghViewTestCase):
             Dog.objects.all().count(),
             before_dogs_count - 1
         )
-    
+
     def test_cancel_does_not_delete_dog(self):
         before_dogs_count = Dog.objects.all().count()
 

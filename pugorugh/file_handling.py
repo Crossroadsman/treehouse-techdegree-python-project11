@@ -24,7 +24,7 @@ def handle_uploaded_file(uploaded_file, path, name):
     """
 
     logging.debug(f'creating file at {path} called {name}')
-    
+
     # (w)rite (b)inary mode (+)can update
     with open(f'{path}/{name}', 'wb+') as target_file:
         for chunk in uploaded_file.chunks():
@@ -35,7 +35,9 @@ def handle_uploaded_file(uploaded_file, path, name):
 
 # Note we might need to set MEDIA_URL and MEDIA_ROOT in settings.py (and
 # redirect them to static, since react is looking for the images in static)
-# (see: https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html)
+# (for further discussion see:
+# https://simpleisbetterthancomplex.com/tutorial/
+# 2016/08/01/how-to-upload-files-with-django.html)
 def process_upload(file, pk, upload_dir=settings.DOG_UPLOAD_DIR):
     """Takes `file` of type `UploadedFile` (the type of the 'files' in
     `request.FILES`) then:
