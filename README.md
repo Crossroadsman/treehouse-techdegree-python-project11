@@ -13,11 +13,19 @@ Installation
 1. Clone the project
 2. Create and activate a venv
 3. Install dependencies (listed in [`requirements.txt`][reqs])
-4. Feel free to use the built-in test superuser (username: admin; password testpassword) or create your
-   own user (but note that any user created using the `createsuperuser` command will not be able to use the
-   front-end app. If you want a user who is both a superuser for Django Admin purposes AND can use the
-   front-end app, first create a user from inside the app then in Django Admin give that user the `staff status`
-   and `superuser status` User permissions).
+4. Feel free to use one of the built-in users:
+   
+   Username | Password       | User Type
+   ---------|----------------|-----------
+   `admin`  | `testpassword` | superuser (for admin functions)
+   `alice`  | `testpassword` | application user (for using the app)
+
+   or create your own user (**but Note that any user created using the
+   `createsuperuser` command will not be able to use the front-end app. If you
+   want a user who is both a superuser for Django Admin purposes AND can use
+   the front-end app, first create a user from inside the app then in Django
+   Admin give that user the `staff status` and `superuser status` User
+   permissions).
 
 Usage
 -----
@@ -83,19 +91,19 @@ Project Status
   - [x] `gender` ('m'/'f'/'u')
   - [x] `size` ('s'/'m'/'l'/'xl')
   - [x] Other relevant fields to increase functionality
-- [ ] `UserDog` Model:
+- [x] `UserDog` Model:
   - [x] Properly configured
   - [x] `user`
   - [x] `dog`
   - [x] `status` ('l'/'d')
   - [ ] Other relevant fields to increase functionality
-- [ ] `UserPref` Model:
+- [x] `UserPref` Model:
   - [x] Properly configured
   - [x] `user`
   - [x] `age` ('b'/'y'/'a'/'s')
   - [x] `gender` ('m'/'f')
   - [x] `size` ('s'/'m'/'l'/'xl')
-  - [ ] Other relevant fields to increase functionality
+  - [x] Other relevant fields to increase functionality
 - [ ] `Dog` serializer
   - [ ] reveals all fields
 - [ ] `UserPref` serializer
