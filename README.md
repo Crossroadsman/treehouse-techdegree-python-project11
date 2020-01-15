@@ -21,9 +21,11 @@ Installation
    ---------|----------------|-----------
    `admin`  | `testpassword` | superuser (for admin functions)
    `alice`  | `testpassword` | application user (for using the app)
+   `bob`    | `testpassword` | application user (for using the app)
+   `carol`  | `testpassword` | application user (for using the app)
 
    or create your own user (**but Note that any user created using the
-   `createsuperuser` command will not be able to use the front-end app. If you
+   `createsuperuser` command will not be able to use the front-end app**. If you
    want a user who is both a superuser for Django Admin purposes AND can use
    the front-end app, first create a user from inside the app then in Django
    Admin give that user the `staff status` and `superuser status` User
