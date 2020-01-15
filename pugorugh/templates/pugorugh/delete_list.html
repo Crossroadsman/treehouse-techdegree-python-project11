@@ -4,15 +4,16 @@
 {% block title %}Delete Dog{% endblock %}
 
 {% block main_content %}
-    <h1>CHOOSE A DOG TO DELETE</h1>
 
-    <ol>
-      {% for dog in dogs %}
-        <li>
-            {{ dog.name }}
-            <img src="/static/images/dogs/{{ dog.image_filename }}" alt="dog image" height="100">
-            <a href="{% url 'delete_dog' pk=dog.id %}">DELETE</a>
-        </li>
-      {% endfor %}
-    </ol>
+  <h1 id="main-heading">CHOOSE A DOG TO DELETE</h1>
+
+  <ol class="dog-list">
+    {% for dog in dogs %}
+      <li class="dog-card">
+        <img src="/static/images/dogs/{{ dog.image_filename }}" alt="dog image" height="100">
+        {{ dog.name }}
+        <a href="{% url 'delete_dog' pk=dog.id %}" class="danger-link">DELETE</a>
+      </li>
+    {% endfor %}
+  </ol>
 {% endblock main_content %}

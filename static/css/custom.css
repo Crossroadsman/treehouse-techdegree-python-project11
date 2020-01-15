@@ -40,3 +40,33 @@ button:disabled {
   color: #dddddd;
   box-shadow: 0 0 0 2px #dddddd inset;
 }
+
+#main-heading {
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+.dog-list {
+  margin-left: 3%;
+  margin-right: 3%;
+  
+}
+
+.dog-list li {
+  font-size: larger;
+}
+
+.dog-list img {
+  vertical-align: middle;
+}
+
+.danger-button {
+  color: red;
+  border-color: red;
+  background-color: rgba(255, 0, 0, 0.1);
+}
+
+.danger-link {
+  color: red;
+  font-weight: bolder;
+}

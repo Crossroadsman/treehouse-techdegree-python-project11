@@ -3,13 +3,11 @@
 {% block title %}Add Dog{% endblock %}
 
 {% block main_content %}
-  <h1>ADD DOG</h1>
-  <div>
+  <div id="main-heading">
+    <h1>ADD DOG</h1>
     <form method="POST" enctype="multipart/form-data">
       {% csrf_token %}
       {{ form.as_p }}
       <input type="submit" value="Add Dog">
-
     </form>
-  </div>
 {% endblock main_content %}
