@@ -11,6 +11,8 @@ Installation
 1. Clone the project
 2. Create and activate a venv
 3. Install dependencies (listed in [`requirements.txt`][reqs])
+4. Feel free to use the built-in test superuser (username: superman; password testpassword) or create your
+   own user.
 
 Usage
 -----
@@ -61,29 +63,29 @@ Project Status
 
 ### vs Specs from How You Will Be Graded ###
 - [ ] Script runs correctly
-- [ ] Correct dogs are shown
-- [ ] Ability to add/remove dogs
-- [ ] `Dog` Model:
-  - [ ] Properly configured
-  - [ ] `name`
-  - [ ] `image_filename`
-  - [ ] `breed`
-  - [ ] `age` (integer months)
-  - [ ] `gender` ('m'/'f'/'u')
-  - [ ] `size` ('s'/'m'/'l'/'xl')
-  - [ ] Other relevant fields to increase functionality
+- [x] Correct dogs are shown
+- [x] Ability to add/remove dogs
+- [x] `Dog` Model:
+  - [x] Properly configured
+  - [x] `name`
+  - [x] `image_filename`
+  - [x] `breed`
+  - [x] `age` (integer months)
+  - [x] `gender` ('m'/'f'/'u')
+  - [x] `size` ('s'/'m'/'l'/'xl')
+  - [x] Other relevant fields to increase functionality
 - [ ] `UserDog` Model:
-  - [ ] Properly configured
-  - [ ] `user`
-  - [ ] `dog`
-  - [ ] `status` ('l'/'d')
+  - [x] Properly configured
+  - [x] `user`
+  - [x] `dog`
+  - [x] `status` ('l'/'d')
   - [ ] Other relevant fields to increase functionality
 - [ ] `UserPref` Model:
-  - [ ] Properly configured
-  - [ ] `user`
-  - [ ] `age` ('b'/'y'/'a'/'s')
-  - [ ] `gender` ('m'/'f')
-  - [ ] `size` ('s'/'m'/'l'/'xl')
+  - [x] Properly configured
+  - [x] `user`
+  - [x] `age` ('b'/'y'/'a'/'s')
+  - [x] `gender` ('m'/'f')
+  - [x] `size` ('s'/'m'/'l'/'xl')
   - [ ] Other relevant fields to increase functionality
 - [ ] `Dog` serializer
   - [ ] reveals all fields
@@ -101,10 +103,10 @@ Project Status
   - [ ] set user preferences:
     - [ ] `/api/user/preferences/`
   - [ ] additional routes that increase functionality
-- [ ] Token-based Auth
-- [ ] Unit Tests
-  - [ ] >50% coverage
-  - [ ] >75% coverage
+- [x] Token-based Auth
+- [x] Unit Tests
+  - [x] >50% coverage
+  - [x] >75% coverage
 - [ ] PEP8 Compliant
 
 
