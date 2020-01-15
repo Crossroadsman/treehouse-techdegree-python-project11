@@ -5,7 +5,9 @@ Requirements
 ------------
 
 The minimum compatible version of Python is 3.6 (December 2016).
-Other requirements are specified in [`requirements.txt`][reqs]
+Other requirements are specified in [`requirements.txt`][reqs]. Additional
+requirements for packages that might be useful for testing but not required
+to use the application are specified in [`test-requirements.txt`][testreqs].
 
 Installation
 ------------
@@ -30,7 +32,9 @@ Installation
 Usage
 -----
 
-**TODO**
+- The application can be run using `python3 manage.py runserver 0:8000`
+- Tests can be run using `python3 manage.py test`
+- Coverage reports can be generated using `coverage run manage.py test`
 
 Project Status
 --------------
@@ -104,10 +108,10 @@ Project Status
   - [x] `gender` ('m'/'f')
   - [x] `size` ('s'/'m'/'l'/'xl')
   - [x] Other relevant fields to increase functionality
-- [ ] `Dog` serializer
-  - [ ] reveals all fields
-- [ ] `UserPref` serializer
-  - [ ] reveals all fields except `user`
+- [x] `Dog` serializer
+  - [x] reveals all fields
+- [x] `UserPref` serializer
+  - [x] reveals all fields except `user`
 - [x] Routes:
   - [x] next dog:
     - [x] next liked: `/api/dog/<pk>/liked/next/`
@@ -126,5 +130,58 @@ Project Status
   - [x] >75% coverage
 - [x] PEP8 Compliant
 
+Testing
+-------
+
+### [Test Running](https://docs.djangoproject.com/en/2.2/topics/testing/overview/#running-tests) ###
+
+- Run all tests:
+  ```console
+   $ python3 manage.py test
+   ```
+
+- Run a single test suite:
+  ```console
+  $ python3 manage.py test pugorugh
+  ```
+
+- Run a single test file:
+  ```console
+  $ python3 manage.py test pugorugh.tests.test_models
+  ```
+
+- Run a single test case:
+  ```console
+  $ python3 manage.py test pugorugh.tests.test_models.DogModelTests
+  ```
+
+- Run a single test method:
+  ```console
+  $ python3 manage.py test accounts.tests.test_models.MenuModelTests.test_create_model_database_has_correct_data
+  ```
+
+### Coverage ###
+
+- Run coverage:
+  ```console
+  $ coverage run manage.py test [the-app-to-test]
+  ```
+
+- Show the simple coverage report:
+  ```console
+  $ coverage report
+  ```
+
+- Generate a detailed HTML report (after coverage has been run):
+  ```console
+  $ coverage html
+  ```
+
+- Erase the coverage report
+  ```console
+  $ coverage erase
+  ```
+
 
 [reqs]: https://github.com/Crossroadsman/treehouse-techdegree-python-project11/blob/master/requirements.txt
+[testreqs]: https://github.com/Crossroadsman/treehouse-techdegree-python-project11/blob/master/test-requirements.txt
