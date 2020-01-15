@@ -5,7 +5,8 @@
 {% block main_content %}
   <div id="main-heading">
     <h1>DELETE {{ dog.name }}</h1>
-    <p>Are you sure?</p>
+    <img src="/static/images/dogs/{{ dog.image_filename }}" alt="dog image" height="400">
+    <p>Are you sure you want to delete this wonderful dog?</p>
     <form method="POST">
       {% csrf_token %}
       <input type="submit" name="cancel" value="Cancel">
