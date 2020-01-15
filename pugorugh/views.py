@@ -44,6 +44,7 @@ class RandomDogRetrieveAPIView(RetrieveAPIView):
         dog = random.choice(dogs)
         return dog
 
+
 class NeedMoreLoveDogRetrieveAPIView(RetrieveAPIView):
     """View for getting a dog that needs more love
 
