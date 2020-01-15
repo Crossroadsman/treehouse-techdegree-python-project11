@@ -79,7 +79,7 @@ Project Status
 
 ### vs Specs from How You Will Be Graded ###
 
-- [ ] Script runs correctly
+- [x] Script runs correctly
 - [x] Correct dogs are shown
 - [x] Ability to add/remove dogs
 - [x] `Dog` Model:
@@ -96,7 +96,7 @@ Project Status
   - [x] `user`
   - [x] `dog`
   - [x] `status` ('l'/'d')
-  - [ ] Other relevant fields to increase functionality
+  - [x] Other relevant fields to increase functionality
 - [x] `UserPref` Model:
   - [x] Properly configured
   - [x] `user`
