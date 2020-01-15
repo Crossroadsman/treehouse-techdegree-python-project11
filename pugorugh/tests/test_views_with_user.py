@@ -301,7 +301,7 @@ class NeedMoreLoveDogRetrieveAPIView(ViewsWithUserTestCase):
             'molly',
             'dougie'
         ]
-        uri = '/api/dog/random/'
+        uri = '/api/dog/needs-love/'
 
         response = self.client.get(uri)
 

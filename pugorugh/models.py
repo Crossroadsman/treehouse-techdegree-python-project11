@@ -88,4 +88,10 @@ class UserPref(Model):
     size = CharField(max_length=8, default="s,m,l,xl")
 
     def __str__(self):
-        return f'{self.user}, {self.age}, {self.gender}, {self.size}'
+        s = (
+            f'{self.user} '
+            f'age: {self.age}, '
+            f'gender: {self.gender}, '
+            f'size: {self.size}'
+        )
+        return s
