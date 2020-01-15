@@ -71,6 +71,11 @@ class UserDog(Model):
     dog = ForeignKey(to='Dog', on_delete=CASCADE)
     status = CharField(max_length=1, choices=STATUS_CHOICES)
 
+    # Extra Fields (Optional)
+    # -----------------------
+    favourite = BooleanField(default=False)
+    met_in_person = BooleanField(default=False)
+
     class Meta:
         unique_together = (
             ('user', 'dog'),
@@ -86,6 +91,12 @@ class UserPref(Model):
     age = CharField(max_length=7, default="b,y,a,s")
     gender = CharField(max_length=3, default="m,f")
     size = CharField(max_length=8, default="s,m,l,xl")
+
+    # Extra Fields (Optional)
+    # -----------------------
+    breed = CharField(max_length=255, blank=True, default='')
+    favourite_toy = CharField(max_length=255, blank=True, default='')
+    favourite_treat = CharField(max_length=255, blank=True, default='')
 
     def __str__(self):
         s = (
