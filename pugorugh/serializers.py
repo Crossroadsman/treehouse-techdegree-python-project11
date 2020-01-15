@@ -38,6 +38,8 @@ class DogSerializer(serializers.ModelSerializer):
             'age',
             'gender',
             'size',
+            'favourite_toy',
+            'favourite_treat',
         )
 
 
@@ -120,4 +122,7 @@ class UserPrefSerializer(serializers.ModelSerializer):
             'age',
             'gender',
             'size',
+            'breed',
+            'favourite_toy',
+            'favourite_treat',
         )
