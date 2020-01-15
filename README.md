@@ -11,8 +11,11 @@ Installation
 1. Clone the project
 2. Create and activate a venv
 3. Install dependencies (listed in [`requirements.txt`][reqs])
-4. Feel free to use the built-in test superuser (username: superman; password testpassword) or create your
-   own user.
+4. Feel free to use the built-in test superuser (username: admin; password testpassword) or create your
+   own user (but note that any user created using the `createsuperuser` command will not be able to use the
+   front-end app. If you want a user who is both a superuser for Django Admin purposes AND can use the
+   front-end app, first create a user from inside the app then in Django Admin give that user the `staff status`
+   and `superuser status` User permissions).
 
 Usage
 -----
