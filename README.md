@@ -3,11 +3,13 @@ Project 11: Pug or Ugh API with Django
 
 Requirements
 ------------
+
 The minimum compatible version of Python is 3.6 (December 2016).
 Other requirements are specified in [`requirements.txt`][reqs]
 
 Installation
 ------------
+
 1. Clone the project
 2. Create and activate a venv
 3. Install dependencies (listed in [`requirements.txt`][reqs])
@@ -19,11 +21,14 @@ Installation
 
 Usage
 -----
+
 **TODO**
 
 Project Status
 --------------
+
 ### vs Specs from Project Instructions ###
+
 - [x] Create application with the following models and fieldnames:
   - [x] `Dog` model
     - [x] `name`
@@ -65,6 +70,7 @@ Project Status
 - [x] >75% Test coverage
 
 ### vs Specs from How You Will Be Graded ###
+
 - [ ] Script runs correctly
 - [x] Correct dogs are shown
 - [x] Ability to add/remove dogs
@@ -94,25 +100,23 @@ Project Status
   - [ ] reveals all fields
 - [ ] `UserPref` serializer
   - [ ] reveals all fields except `user`
-- [ ] Routes:
-  - [ ] next dog:
-    - [ ] next liked: `/api/dog/<pk>/liked/next/`
-    - [ ] next disliked: `/api/dog/<pk>/disliked/next/`
-    - [ ] next undecided: `/api/dog/<pk>/undecided/next/`
-  - [ ] set dog's status:
-    - [ ] like: `/api/dog/<pk>/liked/`
-    - [ ] dislike: `/api/dog/<pk>/disliked/`
-    - [ ] undecided: `/api/dog/<pk>/undecided/`
-  - [ ] set user preferences:
-    - [ ] `/api/user/preferences/`
-  - [ ] additional routes that increase functionality
+- [x] Routes:
+  - [x] next dog:
+    - [x] next liked: `/api/dog/<pk>/liked/next/`
+    - [x] next disliked: `/api/dog/<pk>/disliked/next/`
+    - [x] next undecided: `/api/dog/<pk>/undecided/next/`
+  - [x] set dog's status:
+    - [x] like: `/api/dog/<pk>/liked/`
+    - [x] dislike: `/api/dog/<pk>/disliked/`
+    - [x] undecided: `/api/dog/<pk>/undecided/`
+  - [x] set user preferences:
+    - [x] `/api/user/preferences/`
+  - [x] additional routes that increase functionality
 - [x] Token-based Auth
 - [x] Unit Tests
   - [x] >50% coverage
   - [x] >75% coverage
-- [ ] PEP8 Compliant
-
-
+- [x] PEP8 Compliant
 
 
 [reqs]: https://github.com/Crossroadsman/treehouse-techdegree-python-project11/blob/master/requirements.txt
